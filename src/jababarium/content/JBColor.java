@@ -20,7 +20,6 @@ public class JBColor {
             darkEnrColor = Pal.sapBullet.cpy().mul(1.075f).lerp(Color.white, 0.075f),
             thurmixRed = Color.valueOf("#FF9492"),
             thurmixRedLight = Color.valueOf("#FFCED0"),
-            green = Color.valueOf("##5CE65C"),
             thurmixRedDark = thurmixRed.cpy().lerp(Color.black, 0.9f),
             darkEnr = darkEnrColor.cpy().lerp(Color.black, 0.85f),
             darkEnrFront = darkEnrColor.cpy().lerp(Color.white, 0.45f),
@@ -40,6 +39,8 @@ public class JBColor {
             chroniteEdge = chroniteBase.cpy().lerp(Pal.accent, 0.06f),
             chroniteGlow = chroniteBase.cpy().lerp(Color.white, 0.22f).a(0.55f),
             pulsariteBase = Color.gray.cpy().lerp(JBColor.nectrone, 0.25f);
+
+
 
     static {
         Colors.put("heal", Pal.heal);

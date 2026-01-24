@@ -5,11 +5,8 @@ import mindustry.Vars;
 
 public class JBSounds {
 
-    public static Sound artilleryFire1,
-            artilleryFire2,
-            artilleryFire3,
-            artilleryOpen1,
-            artilleryOpen2;
+    public static Sound artilleryFire1, artilleryFire2, artilleryFire3, artilleryOpen1, artilleryOpen2, fluxReactorExplosion,
+    fluxReactorWorking;
 
     public static void load() {
         artilleryFire1 = loadSound("artilleryfire1");
@@ -17,6 +14,8 @@ public class JBSounds {
         artilleryFire3 = loadSound("artilleryfire3");
         artilleryOpen1 = loadSound("artilleryopen1");
         artilleryOpen2 = loadSound("artilleryopen2");
+        fluxReactorExplosion = loadSound("fluxreactorexplosion");
+        fluxReactorWorking = loadSound("fluxreactorworking");
     }
 
     private static Sound loadSound(String name) {
