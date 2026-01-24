@@ -38,7 +38,8 @@ public class JBColor {
             chroniteLight = chroniteBase.cpy().lerp(Color.white, 0.35f),
             chroniteEdge = chroniteBase.cpy().lerp(Pal.accent, 0.06f),
             chroniteGlow = chroniteBase.cpy().lerp(Color.white, 0.22f).a(0.55f),
-            pulsariteBase = Color.gray.cpy().lerp(JBColor.nectrone, 0.25f);
+            pulsariteBase = Color.gray.cpy().lerp(JBColor.nectrone, 0.25f),
+            green = Color.valueOf("##5CE65C");
 
 
 

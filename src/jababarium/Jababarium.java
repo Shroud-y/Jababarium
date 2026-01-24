@@ -36,6 +36,7 @@ public class Jababarium extends Mod {
         JBItems.load();
         JBLiquids.load();
         JBSounds.load();
+        JBBullets.load();
         JBBlocks.load();
         JBContent.loadPriority();
         CraftingBlock.load();
