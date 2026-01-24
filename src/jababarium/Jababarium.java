@@ -33,12 +33,11 @@ public class Jababarium extends Mod {
 
     @Override
     public void loadContent() {
-        JBSounds.load();
-        JBBullets.load();
-        JBBlocks.load();
-        JBContent.loadPriority();
         JBItems.load();
         JBLiquids.load();
+        JBSounds.load();
+        JBBlocks.load();
+        JBContent.loadPriority();
         CraftingBlock.load();
         JBOres.load();
     }
