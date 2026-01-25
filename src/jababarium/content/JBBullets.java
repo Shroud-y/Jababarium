@@ -2,6 +2,7 @@ package jababarium.content;
 
 import arc.graphics.Color;
 import mindustry.content.Fx;
+import mindustry.entities.bullet.ArtilleryBulletType;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.BulletType;
 // import mindustry.gen.Sounds; // Цей імпорт виправляє помилку зі звуком!
@@ -12,11 +13,11 @@ public class JBBullets {
 
     public static void load() {
 
-        burst = new BasicBulletType(16f, 250) {
+        burst = new ArtilleryBulletType(16f, 250) {
             { // Швидкість 16, Шкода 250
-                // --- Основні параметри ---
-                // Дальність турелі 1200 / Швидкість 16 = 75.
-                // Ставимо 80, щоб точно долітав до краю радіусу.
+              // --- Основні параметри ---
+              // Дальність турелі 1200 / Швидкість 16 = 75.
+              // Ставимо 80, щоб точно долітав до краю радіусу.
                 lifetime = 80f;
 
                 width = 14f;
@@ -39,7 +40,7 @@ public class JBBullets {
                 trailColor = backColor;
 
                 // --- Ефекти влучання ---
-                hitSound = JBSounds.artilleryFire1; // Потужний звук
+                hitSound = JBSounds.shootGauss1; // Потужний звук
                 shootEffect = Fx.shootBigColor;
                 smokeEffect = Fx.shootBigSmoke;
                 hitEffect = Fx.massiveExplosion; // Великий вибух
@@ -58,7 +59,7 @@ public class JBBullets {
                         width = 7f;
                         height = 12f;
                         shrinkY = 1f;
-                        lifetime = 35f;
+                        lifetime = 5f;
 
                         backColor = Color.valueOf("#5CE65C");
                         frontColor = Color.white;

@@ -26,16 +26,16 @@ import jababarium.util.graphic.OptionalMultiEffect;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.distribution.*;
 import mindustry.world.consumers.ConsumeLiquid;
-import mindustry.world.draw.*;
+// import mindustry.world.draw.*;
 import mindustry.world.meta.BuildVisibility;
 
 import static arc.graphics.g2d.Lines.lineAngle;
 import static mindustry.type.ItemStack.with;
 
-
 public class JBBlocks {
 
-    public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge, fluxReactor, megaBurstTurret;
+    public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
+            fluxReactor, megaBurstTurret;
 
     public static void load() {
 
@@ -142,69 +142,74 @@ public class JBBlocks {
             }
         };
 
-        cryostalBridge = new ItemBridge("cryostal-item-bridge"){{
-            requirements(Category.distribution, with(
-                    JBItems.cryostal, 3,
-                    JBItems.adamantium, 3
-            ));
-            health = 15;
-            range = 8;
-            canOverdrive = true;
-            itemCapacity = 14;
-            transportTime = 5f;
-        }};
+        cryostalBridge = new ItemBridge("cryostal-item-bridge") {
+            {
+                requirements(Category.distribution, with(
+                        JBItems.cryostal, 3,
+                        JBItems.adamantium, 3));
+                health = 15;
+                range = 8;
+                canOverdrive = true;
+                itemCapacity = 14;
+                transportTime = 5f;
+            }
+        };
 
-        cryostalJunction = new Junction("cryostal-junction") {{
-            requirements(Category.distribution, with(
-                    JBItems.cryostal, 2,
-                    JBItems.adamantium, 3
-            ));
-            health = 10;
-            itemCapacity = 20;
-        }};
+        cryostalJunction = new Junction("cryostal-junction") {
+            {
+                requirements(Category.distribution, with(
+                        JBItems.cryostal, 2,
+                        JBItems.adamantium, 3));
+                health = 10;
+                itemCapacity = 20;
+            }
+        };
 
-        cryostalConveyor = new Conveyor("cryostal-conveyor") {{
-            requirements(Category.distribution, with(
-                    JBItems.cryostal, 1,
-                    JBItems.adamantium, 1
-            ));
+        cryostalConveyor = new Conveyor("cryostal-conveyor") {
+            {
+                requirements(Category.distribution, with(
+                        JBItems.cryostal, 1,
+                        JBItems.adamantium, 1));
 
-            speed = 0.1f;
-            displayedSpeed = 16;
-            itemCapacity = 14;
-            health = 10;
-            canOverdrive = true;
-            junctionReplacement = cryostalJunction;
-            bridgeReplacement = cryostalBridge;
-        }};
+                speed = 0.1f;
+                displayedSpeed = 16;
+                itemCapacity = 14;
+                health = 10;
+                canOverdrive = true;
+                junctionReplacement = cryostalJunction;
+                bridgeReplacement = cryostalBridge;
+            }
+        };
 
-        cryostalRouter = new Router("cryostal-router") {{
-            requirements(Category.distribution, with(
-                    JBItems.cryostal, 2,
-                    JBItems.adamantium, 2
-            ));
-            health = 15;
-            canOverdrive = false;
-            speed = 0f;
-            itemCapacity = 20;
-        }};
+        cryostalRouter = new Router("cryostal-router") {
+            {
+                requirements(Category.distribution, with(
+                        JBItems.cryostal, 2,
+                        JBItems.adamantium, 2));
+                health = 15;
+                canOverdrive = false;
+                speed = 0f;
+                itemCapacity = 20;
+            }
+        };
 
-        fluxReactor = new FluxReactor("flux-reactor") {{
-            requirements(Category.power, with(
-                    JBItems.amalgam, 3000,
-                    JBItems.sergium, 3500,
-                    JBItems.pulsarite, 3000
-            ));
-            size = 9;
-            coolant = JBLiquids.argon;
-            ambientSound = JBSounds.fluxReactorWorking;
+        fluxReactor = new FluxReactor("flux-reactor") {
+            {
+                requirements(Category.power, with(
+                        JBItems.amalgam, 3000,
+                        JBItems.sergium, 3500,
+                        JBItems.pulsarite, 3000));
+                size = 9;
+                coolant = JBLiquids.argon;
+                ambientSound = JBSounds.fluxReactorWorking;
 
-            consumeLiquid(JBLiquids.argon, 2f);
-            consumeItems(with(JBItems.sergium, 2, JBItems.pulsarite, 3, JBItems.adamantium, 4));
+                consumeLiquid(JBLiquids.argon, 2f);
+                consumeItems(with(JBItems.sergium, 2, JBItems.pulsarite, 3, JBItems.adamantium, 4));
 
-        }};
+            }
+        };
 
-        megaBurstTurret = new ItemTurret("mega-burst-turret") { // TODO fix range
+        megaBurstTurret = new ItemTurret("helix") { // TODO fix range
             {
                 armor = 30;
                 size = 5;
@@ -272,7 +277,7 @@ public class JBBlocks {
                 consumePowerCond(800f, TurretBuild::isActive);
                 reload = 90f;
 
-                ammo(Items.thorium, JBBullets.burst);
+                ammo(Items.plastanium, JBBullets.burst);
                 // ammo(
                 // Items.copper, new BasicBulletType(3f, 20) {
                 // {
@@ -283,7 +288,7 @@ public class JBBlocks {
                 // });
 
                 requirements(Category.turret, BuildVisibility.shown,
-                        with(JBItems.amalgam, 1000, JBItems.sergium, 425));
+                        with(JBItems.cryostal, 300, JBItems.surgeAlloy, 425, JBItems.plastanium, 300));
 
             }
         };
