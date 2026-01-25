@@ -1,5 +1,6 @@
 package jababarium.content;
 
+import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
@@ -17,18 +18,21 @@ import mindustry.entities.Effect;
 import mindustry.entities.pattern.ShootPattern;
 import mindustry.graphics.Drawf;
 import mindustry.type.Category;
-import mindustry.type.Item;
 import mindustry.type.ItemStack;
 import mindustry.world.Block;
 import mindustry.gen.Bullet;
 import jababarium.util.func.JBFunc;
 import mindustry.entities.bullet.FlakBulletType;
+import mindustry.entities.part.DrawPart.PartMove;
+import mindustry.entities.part.DrawPart.PartProgress;
+import mindustry.entities.part.RegionPart;
 import jababarium.expand.block.commandable.BombLauncher;
 import jababarium.expand.bullets.LightningLinkerBulletType;
 import jababarium.util.graphic.OptionalMultiEffect;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.distribution.*;
 import mindustry.world.consumers.ConsumeLiquid;
+import mindustry.world.draw.DrawTurret;
 // import mindustry.world.draw.*;
 import mindustry.world.meta.BuildVisibility;
 
@@ -38,7 +42,7 @@ import static mindustry.type.ItemStack.with;
 public class JBBlocks {
 
     public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
-            fluxReactor, megaBurstTurret, selfhealingConduit;
+            fluxReactor, helix, selfhealingConduit, singularityNeedle;;
 
     public static void load() {
 
@@ -212,7 +216,7 @@ public class JBBlocks {
             }
         };
 
-        megaBurstTurret = new ItemTurret("helix") { // TODO fix range
+        helix = new ItemTurret("helix") {
             {
                 armor = 30;
                 size = 5;
@@ -296,13 +300,68 @@ public class JBBlocks {
             }
         };
 
-        selfhealingConduit = new SelfHealingConduit("self-healing conduit") {{
-            requirements(Category.liquid, ItemStack.with(
-                    JBItems.cryostal, 4,
-                    JBItems.adamantium, 5,
-                    JBItems.metaglass, 7
-            ));
-            health = 30;
-        }};
+        selfhealingConduit = new SelfHealingConduit("self-healing conduit") {
+            {
+                requirements(Category.liquid, ItemStack.with(
+                        JBItems.cryostal, 4,
+                        JBItems.adamantium, 5,
+                        JBItems.metaglass, 7));
+                health = 30;
+            }
+        };
+
+        singularityNeedle = new ItemTurret("singularity-needle") {
+            {
+                // Базові характеристики
+                requirements(Category.turret, with(
+                        Items.silicon, 450,
+                        JBItems.sergium, 300,
+                        Items.phaseFabric, 200,
+                        Items.plastanium, 150));
+
+                size = 6;
+                health = 2400;
+                range = 380f;
+                reload = 180f;
+                recoil = 2f;
+                shake = 2f;
+
+                ammo(
+                        Items.phaseFabric, JBBullets.singularityPoint // Можна додати іншу варіацію
+                );
+
+                consumePower(12f); // 720 енергії/сек
+                consumeLiquid(Liquids.cryofluid, 0.5f);
+
+                drawer = new DrawTurret("singularity-needle") {
+                    {
+                        parts.add(new RegionPart("-part") {
+                            {
+                                progress = PartProgress.warmup;
+                                mirror = true;
+                                under = false;
+
+                                moveX = 4f;
+                                moveY = -2f;
+                                moveRot = -15f;
+
+                                moves.add(new PartMove(PartProgress.recoil, 0f, -3f, 0f));
+                            }
+                        });
+
+                        parts.add(new RegionPart("-glow") {
+                            {
+                                blending = Blending.additive;
+                                color = Color.valueOf("bf92f9");
+                                outline = false;
+                                mirror = false;
+                                progress = PartProgress.warmup;
+                                colorTo = Color.white;
+                            }
+                        });
+                    }
+                };
+            }
+        };
     }
 }

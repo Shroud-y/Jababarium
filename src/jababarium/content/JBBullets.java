@@ -90,19 +90,12 @@ public class JBBullets {
                                 float angle = arc.math.Angles.angle(unit.x, unit.y, b.x, b.y);
                                 float dst = arc.math.Mathf.dst(unit.x, unit.y, b.x, b.y);
 
-                                // Розраховуємо силу так, щоб вона була достатньою, але не надмірною
-                                // 0.12f - це коефіцієнт "м'якості" притягування.
-                                // Якщо все ще перелітають - зменш до 0.08f.
                                 float strength = dst * 0.12f;
 
-                                // Обмежуємо максимальну швидкість, щоб юніти не "вилітали" з карти
                                 strength = arc.math.Mathf.clamp(strength, 0f, 15f);
 
-                                // ПЕРЕШКОДЖАЄМО ПЕРЕЛЬОТУ:
-                                // 1. Спочатку повністю зупиняємо юніта
                                 unit.vel.set(0, 0);
 
-                                // 2. Надаємо йому новий вектор прямо до центру
                                 unit.vel.add(
                                         arc.math.Mathf.cosDeg(angle) * strength,
                                         arc.math.Mathf.sinDeg(angle) * strength);
