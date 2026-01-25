@@ -128,8 +128,10 @@ public class JBFx {
 
             hugeSmokeGray = new Effect(40f, e -> {
                 Draw.color(Color.gray, Color.darkGray, e.fin());
-                Angles.randLenVectors(e.id, 6, 2.0F + 19.0F * e.finpow(), (x, y) -> Fill.circle(e.x + x / 2.0F, e.y + y / 2.0F, e.fout() * 2f));
-                e.scaled(25f, i -> Angles.randLenVectors(e.id, 6, 2.0F + 19.0F * i.finpow(), (x, y) -> Fill.circle(e.x + x, e.y + y, i.fout() * 4.0F)));
+                Angles.randLenVectors(e.id, 6, 2.0F + 19.0F * e.finpow(),
+                        (x, y) -> Fill.circle(e.x + x / 2.0F, e.y + y / 2.0F, e.fout() * 2f));
+                e.scaled(25f, i -> Angles.randLenVectors(e.id, 6, 2.0F + 19.0F * i.finpow(),
+                        (x, y) -> Fill.circle(e.x + x, e.y + y, i.fout() * 4.0F)));
             }),
 
             largeDarkEnergyHit = new Effect(50, e -> {
@@ -162,14 +164,14 @@ public class JBFx {
                 circle(e.x, e.y, e.fin() * 35);
 
                 stroke(e.fout() * 2.25f);
-                randLenVectors(e.id, 9, 7f + 60f * e.finpow(), (x, y) -> lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), 4f + e.fout() * 12f));
+                randLenVectors(e.id, 9, 7f + 60f * e.finpow(),
+                        (x, y) -> lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), 4f + e.fout() * 12f));
 
                 Fill.circle(e.x, e.y, e.fout() * 22);
                 color(JBColor.darkEnr);
                 Fill.circle(e.x, e.y, e.fout() * 14);
                 Drawf.light(e.x, e.y, e.fout() * 80f, JBColor.darkEnrColor, 0.7f);
             }),
-
 
             // chainLightningFadeReversed = new Effect(220f, 500f, e -> {
             // if (!(e.data instanceof Position))
@@ -375,10 +377,12 @@ public class JBFx {
                 Lines.stroke(1.5f * e.fout(Interp.pow3Out));
                 Lines.square(e.x, e.y, Mathf.randomSeed(e.id, sizeMin, sizeMax) * e.fin(Interp.pow2Out) + 3, 45);
             } else {
-                Fill.square(e.x, e.y, Mathf.randomSeed(e.id, sizeMin * 0.5f, sizeMin * 0.8f) * e.fout(Interp.pow2Out), 45);
+                Fill.square(e.x, e.y, Mathf.randomSeed(e.id, sizeMin * 0.5f, sizeMin * 0.8f) * e.fout(Interp.pow2Out),
+                        45);
             }
         });
     }
+
     public static Effect energyPulseCore = new Effect(80f, 200f, e -> {
         float scale = 0.35f;
 
@@ -388,15 +392,13 @@ public class JBFx {
                 e.x, e.y,
                 e.fout() * 140f * scale,
                 base,
-                0.8f
-        );
+                0.8f);
 
         Draw.color(base, Color.white, e.fin() * 0.35f);
         Fill.circle(
                 e.x,
                 e.y,
-                (6f + Mathf.absin(Time.time, 6f, 2.5f)) * scale
-        );
+                (6f + Mathf.absin(Time.time, 6f, 2.5f)) * scale);
 
         e.scaled(30f, s -> {
             Draw.color(base);
@@ -404,8 +406,7 @@ public class JBFx {
             Lines.circle(
                     e.x,
                     e.y,
-                    (18f + s.fin(Interp.pow3Out) * 90f) * scale
-            );
+                    (18f + s.fin(Interp.pow3Out) * 90f) * scale);
         });
 
         e.scaled(45f, s -> {
@@ -414,8 +415,7 @@ public class JBFx {
             Lines.circle(
                     e.x,
                     e.y,
-                    (10f + s.fin(Interp.pow5Out) * 120f) * scale
-            );
+                    (10f + s.fin(Interp.pow5Out) * 120f) * scale);
         });
 
         Fx.rand.setSeed(e.id);
@@ -431,10 +431,8 @@ public class JBFx {
                             e.x + x,
                             e.y + y,
                             ang,
-                            (6f + Fx.rand.random(8f)) * e.fout() * scale
-                    );
-                }
-        );
+                            (6f + Fx.rand.random(8f)) * e.fout() * scale);
+                });
 
         Draw.color(base);
         Angles.randLenVectors(
@@ -445,10 +443,8 @@ public class JBFx {
                     Fill.circle(
                             e.x + x,
                             e.y + y,
-                            e.fout() * 3f * scale
-                    );
-                }
-        );
+                            e.fout() * 3f * scale);
+                });
         Draw.reset();
     });
 
@@ -465,33 +461,28 @@ public class JBFx {
                 e.y,
                 55f * scale * shrink,
                 base,
-                0.35f * fout
-        );
+                0.35f * fout);
 
         Draw.color(base, Color.white,
-                (0.15f + Mathf.absin(Time.time, 8f, 0.1f)) * fout
-        );
+                (0.15f + Mathf.absin(Time.time, 8f, 0.1f)) * fout);
         Fill.circle(
                 e.x,
                 e.y,
-                (3.5f + Mathf.absin(Time.time, 6f, 1.2f)) * scale * shrink
-        );
+                (3.5f + Mathf.absin(Time.time, 6f, 1.2f)) * scale * shrink);
 
         Draw.color(base, fout);
         Lines.stroke(1.2f * scale * fout);
         Lines.circle(
                 e.x,
                 e.y,
-                (10f + Mathf.absin(Time.time, 10f, 2.5f)) * scale * shrink
-        );
+                (10f + Mathf.absin(Time.time, 10f, 2.5f)) * scale * shrink);
 
         Draw.color(base, Color.white, 0.1f * fout);
         Lines.stroke(0.6f * scale * fout);
         Lines.circle(
                 e.x,
                 e.y,
-                (16f + Mathf.absin(Time.time + 12f, 12f, 3.5f)) * scale * shrink
-        );
+                (16f + Mathf.absin(Time.time + 12f, 12f, 3.5f)) * scale * shrink);
 
         Fx.rand.setSeed(e.id);
         Angles.randLenVectors(
@@ -503,10 +494,8 @@ public class JBFx {
                     Fill.circle(
                             e.x + x,
                             e.y + y,
-                            1.1f * scale * fout
-                    );
-                }
-        );
+                            1.1f * scale * fout);
+                });
         Draw.reset();
     });
 
@@ -518,15 +507,13 @@ public class JBFx {
                 e.y,
                 45f + Mathf.absin(Time.time, 8f, 8f),
                 base,
-                0.6f
-        );
+                0.6f);
 
         Draw.color(base, Color.white, 0.2f + 0.2f * e.fout());
         Fill.circle(
                 e.x,
                 e.y,
-                4.5f + Mathf.absin(Time.time, 6f, 1.4f)
-        );
+                4.5f + Mathf.absin(Time.time, 6f, 1.4f));
 
         e.scaled(35f, s -> {
             Draw.color(base, Color.white, 0.15f);
@@ -534,8 +521,7 @@ public class JBFx {
             Lines.circle(
                     e.x,
                     e.y,
-                    10f + s.fin(Interp.smooth) * 22f
-            );
+                    10f + s.fin(Interp.smooth) * 22f);
         });
 
         Fx.rand.setSeed(e.id);
@@ -545,8 +531,7 @@ public class JBFx {
             Fill.circle(
                     e.x + x,
                     e.y + y,
-                    (1.1f + flicker) * e.fout()
-            );
+                    (1.1f + flicker) * e.fout());
         });
         Draw.reset();
     });
@@ -554,8 +539,8 @@ public class JBFx {
     public static Effect sergiumMixerCraft = new Effect(70f, e -> {
 
         float boomStart = 0.58f;
-        float boomPeak  = 0.75f;
-        float boomEnd   = 1.05f;
+        float boomPeak = 0.75f;
+        float boomEnd = 1.05f;
         Color base = Color.valueOf("6fa8ff");
 
         float t = e.fin();
@@ -564,33 +549,30 @@ public class JBFx {
 
         float intensity = boom * Interp.sineOut.apply(tail);
 
-        if(intensity > 0f){
+        if (intensity > 0f) {
 
             float shock = Interp.pow2Out.apply(boom);
-            float fade  = Interp.smooth.apply(intensity);
+            float fade = Interp.smooth.apply(intensity);
 
             Draw.color(Color.white, base, shock);
             Fill.circle(
                     e.x,
                     e.y,
-                    8f + 14f * shock
-            );
+                    8f + 14f * shock);
 
             Draw.color(base, Color.white, fade);
             Lines.stroke(3.2f * fade);
             Lines.circle(
                     e.x,
                     e.y,
-                    18f + 38f * shock
-            );
+                    18f + 38f * shock);
 
             Draw.color(base, Color.white, 0.25f * fade);
             Lines.stroke(2f * fade);
             Lines.circle(
                     e.x,
                     e.y,
-                    10f + 26f * shock
-            );
+                    10f + 26f * shock);
 
             Fx.rand.setSeed(e.id + 777L);
             Angles.randLenVectors(e.id + 777, 12, 26f * shock, (x, y) -> {
@@ -600,8 +582,7 @@ public class JBFx {
                         e.x + x,
                         e.y + y,
                         Mathf.angle(x, y),
-                        len
-                );
+                        len);
             });
 
             Drawf.light(
@@ -609,8 +590,7 @@ public class JBFx {
                     e.y,
                     110f * fade,
                     base,
-                    0.9f * fade
-            );
+                    0.9f * fade);
         }
     });
 
@@ -626,14 +606,12 @@ public class JBFx {
                 e.x, e.y,
                 34f * e.fin(),
                 fog,
-                0.35f * alpha
-        );
+                0.35f * alpha);
 
         Fill.circle(
                 e.x,
                 e.y + e.fin() * 6f,
-                12f + e.fin() * 18f
-        );
+                12f + e.fin() * 18f);
 
         Angles.randLenVectors(
                 e.id,
@@ -644,18 +622,15 @@ public class JBFx {
                     float driftX = Mathf.sin((e.time + x) * 0.02f) * 2.2f;
                     float rise = e.fin() * 10f;
 
-                    float size =
-                            6f +
-                                    e.fin() * 14f +
-                                    Mathf.absin(e.time + x, 8f, 2.5f);
+                    float size = 6f +
+                            e.fin() * 14f +
+                            Mathf.absin(e.time + x, 8f, 2.5f);
 
                     Fill.circle(
                             e.x + x + driftX,
                             e.y + y + rise,
-                            size * e.fout()
-                    );
-                }
-        );
+                            size * e.fout());
+                });
 
         Draw.reset();
     });
@@ -671,7 +646,8 @@ public class JBFx {
         float disappear = Mathf.curve(fout, 0f, 0.35f);
         float scl = appear * disappear;
 
-        if(scl <= 0.001f) return;
+        if (scl <= 0.001f)
+            return;
 
         Color base = Color.valueOf("9ea3a6");
         Color light = Color.valueOf("cfd3d6");
@@ -681,17 +657,15 @@ public class JBFx {
                 x, y,
                 28f * scl,
                 base,
-                0.35f * scl
-        );
+                0.35f * scl);
 
         Draw.color(base, light, 0.3f + Mathf.absin(time, 8f, 0.15f));
         Fill.circle(
                 x,
                 y,
-                (5.5f + Mathf.absin(time, 6f, 0.6f)) * scl
-        );
+                (5.5f + Mathf.absin(time, 6f, 0.6f)) * scl);
 
-        for(int i = 0; i < 3; i++){
+        for (int i = 0; i < 3; i++) {
             float rot = time * (0.25f + i * 0.08f);
 
             Draw.color(dark, base, 0.4f * scl);
@@ -701,11 +675,10 @@ public class JBFx {
                     y,
                     (9f + i * 3f) * scl,
                     0.35f,
-                    rot * 30f
-            );
+                    rot * 30f);
         }
 
-        for(int i = 0; i < 6; i++){
+        for (int i = 0; i < 6; i++) {
             float ang = time * 0.6f + i * 60f;
             float rad = (12f + Mathf.absin(time + i * 4f, 10f, 2.2f)) * scl;
 
@@ -721,8 +694,7 @@ public class JBFx {
             Fill.circle(
                     x + dx,
                     y + dy,
-                    1.3f * scl
-            );
+                    1.3f * scl);
         });
 
         Draw.reset();
@@ -740,7 +712,7 @@ public class JBFx {
 
                     Angles.randLenVectors(
                             e.id,
-                            (int)(6 * smokeSize),
+                            (int) (6 * smokeSize),
                             12f * e.finpow() * smokeSize / 8f,
                             (x, y) -> {
 
@@ -748,13 +720,31 @@ public class JBFx {
                                 Fill.circle(
                                         e.x + x,
                                         e.y + y,
-                                        e.fout() * 3f + 0.1f
-                                );
-                            }
-                    );
+                                        e.fout() * 3f + 0.1f);
+                            });
 
                     Draw.reset();
                 }).layer(Layer.blockOver);
     }
+
+    public static final Effect singularityCollapse = new Effect(200f, e -> {
+        Color violet = Color.valueOf("#cada8f");
+        Color dark = Color.black;
+
+        Draw.color(violet, dark, e.fin());
+        Lines.stroke(2f * e.fout());
+
+        Lines.circle(e.x, e.y, 200f * e.fout(Interp.pow4In));
+        Lines.circle(e.x, e.y, 120f * e.fout(Interp.pow2In));
+
+        Draw.color(violet);
+        Angles.randLenVectors(e.id, 150, 120f * e.fout(), (x, y) -> {
+            Fill.circle(e.x + x, e.y + y, e.fin() * 3f);
+            Drawf.light(e.x + x, e.y + y, 60f, violet, 0.6f * e.fin());
+        });
+
+        Draw.color(Color.black);
+        Fill.circle(e.x, e.y, 15f * e.fin(Interp.pow5Out));
+    });
 
 }

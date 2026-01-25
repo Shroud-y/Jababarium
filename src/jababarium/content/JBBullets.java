@@ -1,81 +1,116 @@
 package jababarium.content;
 
 import arc.graphics.Color;
+import arc.math.Angles;
+import arc.math.Mathf;
 import mindustry.content.Fx;
+import mindustry.entities.Units;
 import mindustry.entities.bullet.ArtilleryBulletType;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.BulletType;
-// import mindustry.gen.Sounds; // Цей імпорт виправляє помилку зі звуком!
+import mindustry.entities.bullet.PointBulletType;
+import mindustry.gen.Bullet;
 
 public class JBBullets {
 
-    public static BulletType burst;
+    public static BulletType burst, singularityPoint;
 
     public static void load() {
 
+        // Твій попередній зелений снаряд
         burst = new ArtilleryBulletType(16f, 250) {
-            { // Швидкість 16, Шкода 250
-              // --- Основні параметри ---
-              // Дальність турелі 1200 / Швидкість 16 = 75.
-              // Ставимо 80, щоб точно долітав до краю радіусу.
+            {
                 lifetime = 80f;
-
                 width = 14f;
                 height = 24f;
-                shrinkY = 0.3f; // Робить снаряд гострим/витягнутим
-
-                // --- Кольори та світло ---
-                // Енергетичний оранжевий колір (можна змінити на свій)
+                shrinkY = 0.3f;
                 backColor = Color.valueOf("#5CE65C");
                 frontColor = Color.white;
-
-                // Снаряд світиться
                 lightColor = backColor;
-                lightOpacity = 0.7f;
-                lightRadius = 40f;
-
-                // --- Ефекти польоту (Трейл) ---
                 trailWidth = 4.5f;
-                trailLength = 25; // Довгий хвіст для відчуття швидкості
+                trailLength = 25;
                 trailColor = backColor;
-
-                // --- Ефекти влучання ---
-                hitSound = JBSounds.shootGauss1; // Потужний звук
+                hitSound = JBSounds.shootGauss1;
                 shootEffect = Fx.shootBigColor;
-                smokeEffect = Fx.shootBigSmoke;
-                hitEffect = Fx.massiveExplosion; // Великий вибух
-                despawnEffect = Fx.scatheExplosion; // Красивий ефект при зникненні
+                hitEffect = Fx.massiveExplosion;
+                despawnEffect = Fx.scatheExplosion;
 
-                // --- Кластери (Осколки) ---
-                fragBullets = 12; // Кількість осколків
-                fragVelocityMin = 0.4f;
-                fragVelocityMax = 4.5f;
-                fragLifeMin = 20f;
-                fragLifeMax = 40f;
-
-                // Осколки теж завдають шкоди і мають ефект блискавок
+                fragBullets = 12;
                 fragBullet = new BasicBulletType(5f, 40) {
                     {
                         width = 7f;
                         height = 12f;
-                        shrinkY = 1f;
-                        lifetime = 5f;
-
+                        lifetime = 25f; // Трохи збільшив, щоб було видно розліт
                         backColor = Color.valueOf("#5CE65C");
                         frontColor = Color.white;
-
-                        trailWidth = 2f;
-                        trailLength = 8;
-                        trailColor = backColor;
-
-                        // Додаємо блискавки для енергетичного ефекту
-                        lightning = 2; // Кількість блискавок від кожного осколка
-                        lightningLength = 6;
+                        lightning = 2;
                         lightningColor = backColor;
-                        lightningDamage = 20;
+                    }
+                };
+            }
+        };
 
+        singularityPoint = new PointBulletType() {
+            {
+                shootEffect = Fx.instShoot;
+                hitEffect = Fx.instHit;
+                smokeEffect = Fx.smokeCloud;
+                trailEffect = Fx.instTrail;
+
+                // Фіолетовий лазер
+                trailColor = Color.valueOf("bf92f9");
+                lightColor = Color.valueOf("bf92f9");
+
+                hitSound = JBSounds.shootGauss3;
+                damage = 3050f;
+                speed = 500f;
+                hitShake = 8f;
+
+                fragOnHit = true;
+                fragBullets = 1;
+
+                fragBullet = new BasicBulletType(0f, 0) {
+                    {
+                        lifetime = 15f;
+                        splashDamageRadius = 400f;
+                        splashDamage = 800f;
+
+                        hitEffect = JBFx.singularityCollapse;
                         despawnEffect = Fx.none;
-                        hitEffect = Fx.hitBulletColor;
+
+                        collidesAir = true;
+                        collidesGround = true;
+                    }
+
+                    @Override
+                    public void update(Bullet b) {
+                        // Виконуємо притягування в перші кадри життя (поки діє колапс)
+                        if (b.time < 1f) {
+                            Units.nearbyEnemies(b.team, b.x, b.y, splashDamageRadius, unit -> {
+                                float angle = arc.math.Angles.angle(unit.x, unit.y, b.x, b.y);
+                                float dst = arc.math.Mathf.dst(unit.x, unit.y, b.x, b.y);
+
+                                // Розраховуємо силу так, щоб вона була достатньою, але не надмірною
+                                // 0.12f - це коефіцієнт "м'якості" притягування.
+                                // Якщо все ще перелітають - зменш до 0.08f.
+                                float strength = dst * 0.12f;
+
+                                // Обмежуємо максимальну швидкість, щоб юніти не "вилітали" з карти
+                                strength = arc.math.Mathf.clamp(strength, 0f, 15f);
+
+                                // ПЕРЕШКОДЖАЄМО ПЕРЕЛЬОТУ:
+                                // 1. Спочатку повністю зупиняємо юніта
+                                unit.vel.set(0, 0);
+
+                                // 2. Надаємо йому новий вектор прямо до центру
+                                unit.vel.add(
+                                        arc.math.Mathf.cosDeg(angle) * strength,
+                                        arc.math.Mathf.sinDeg(angle) * strength);
+                            });
+
+                            JBFx.singularityCollapse.at(b.x, b.y);
+                        }
+                        super.update(b);
                     }
                 };
             }
