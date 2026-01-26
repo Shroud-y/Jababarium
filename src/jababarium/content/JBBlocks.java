@@ -22,7 +22,9 @@ import mindustry.type.ItemStack;
 import mindustry.world.Block;
 import mindustry.gen.Bullet;
 import jababarium.util.func.JBFunc;
+import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.FlakBulletType;
+import mindustry.entities.part.DrawPart.PartProgress;
 import mindustry.entities.part.RegionPart;
 import jababarium.expand.block.commandable.BombLauncher;
 import jababarium.expand.bullets.LightningLinkerBulletType;
@@ -40,7 +42,8 @@ import static mindustry.type.ItemStack.with;
 public class JBBlocks {
 
     public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
-            fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter;
+            fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter,
+            entropyChain;
 
     public static void load() {
 
@@ -298,36 +301,38 @@ public class JBBlocks {
             }
         };
 
-        selfhealingRouter = new SelfHealingLiquidBlocks.SelfHealingRouter("self-healing-router"){{
-            requirements(Category.liquid, ItemStack.with(
-                    JBItems.cryostal, 5,
-                    JBItems.metaglass, 10,
-                    JBItems.adamantium, 7
-            ));
-        }};
+        selfhealingRouter = new SelfHealingLiquidBlocks.SelfHealingRouter("self-healing-router") {
+            {
+                requirements(Category.liquid, ItemStack.with(
+                        JBItems.cryostal, 5,
+                        JBItems.metaglass, 10,
+                        JBItems.adamantium, 7));
+            }
+        };
 
-        selfhealingJunction = new SelfHealingLiquidBlocks.SelfHealingJunction("self-healing-junction"){{
-            requirements(Category.liquid, ItemStack.with(
-                    JBItems.cryostal, 5,
-                    JBItems.adamantium, 6,
-                    JBItems.metaglass, 9
-            ));
-            health = 30;
-        }};
+        selfhealingJunction = new SelfHealingLiquidBlocks.SelfHealingJunction("self-healing-junction") {
+            {
+                requirements(Category.liquid, ItemStack.with(
+                        JBItems.cryostal, 5,
+                        JBItems.adamantium, 6,
+                        JBItems.metaglass, 9));
+                health = 30;
+            }
+        };
 
-        selfhealingConduit = new SelfHealingLiquidBlocks.SelfHealingConduit("self-healing-conduit"){{
-            requirements(Category.liquid, ItemStack.with(
-                    JBItems.cryostal, 4,
-                    JBItems.adamantium, 5,
-                    JBItems.metaglass, 7
-            ));
-            health = 30;
-            junctionReplacement = selfhealingJunction;
-        }};
+        selfhealingConduit = new SelfHealingLiquidBlocks.SelfHealingConduit("self-healing-conduit") {
+            {
+                requirements(Category.liquid, ItemStack.with(
+                        JBItems.cryostal, 4,
+                        JBItems.adamantium, 5,
+                        JBItems.metaglass, 7));
+                health = 30;
+                junctionReplacement = selfhealingJunction;
+            }
+        };
 
         singularityNeedle = new ItemTurret("singularity-needle") {
             {
-                // Базові характеристики
                 requirements(Category.turret, with(
                         Items.silicon, 450,
                         JBItems.sergium, 300,
@@ -342,10 +347,9 @@ public class JBBlocks {
                 shake = 2f;
 
                 ammo(
-                        Items.phaseFabric, JBBullets.singularityPoint // Можна додати іншу варіацію
-                );
+                        Items.phaseFabric, JBBullets.singularityPoint);
 
-                consumePower(12f); // 720 енергії/сек
+                consumePower(12f);
                 consumeLiquid(Liquids.cryofluid, 0.5f);
 
                 drawer = new DrawTurret("singularity-needle") {
@@ -378,5 +382,64 @@ public class JBBlocks {
                 };
             }
         };
+        entropyChain = new ItemTurret("entropy-chain") {
+            {
+                requirements(Category.turret, with(
+                        Items.titanium, 200,
+                        Items.plastanium, 150,
+                        Items.silicon, 200,
+                        JBItems.sergium, 80));
+
+                size = 3;
+                health = 1400;
+                range = 260f;
+                reload = 40f;
+                inaccuracy = 5f;
+
+                consumePower(6f);
+
+                ammo(
+                        Items.plastanium, JBBullets.entropyBolt,
+
+                        Items.phaseFabric, new BasicBulletType(10f, 200) {
+                            {
+                                this.hitEffect = Fx.hitLancer;
+                                this.backColor = Color.valueOf("4fdfff");
+                            }
+                        });
+
+                drawer = new DrawTurret("entropy-chain") {
+                    {
+
+                        parts.add(new RegionPart("-spinner") {
+                            {
+                                progress = PartProgress.warmup;
+                                // spin = 6f;
+                                mirror = false;
+                                under = true;
+                            }
+                        });
+
+                        parts.add(new RegionPart("-barrel") {
+                            {
+                                progress = PartProgress.recoil;
+                                moveY = -4f;
+                                mirror = false;
+                            }
+                        });
+
+                        parts.add(new RegionPart("-glow") {
+                            {
+                                blending = Blending.additive;
+                                color = Color.valueOf("4fdfff");
+                                outline = false;
+                                mirror = false;
+                            }
+                        });
+                    }
+                };
+            }
+        };
+
     }
 }

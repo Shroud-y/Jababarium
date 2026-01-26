@@ -1,19 +1,24 @@
 package jababarium.content;
 
 import arc.graphics.Color;
-import arc.math.Angles;
-import arc.math.Mathf;
+// import arc.math.Angles;
+// import arc.math.Mathf;
 import mindustry.content.Fx;
 import mindustry.entities.Units;
 import mindustry.entities.bullet.ArtilleryBulletType;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.BulletType;
+// import mindustry.entities.bullet.LightningBulletType;
 import mindustry.entities.bullet.PointBulletType;
 import mindustry.gen.Bullet;
+// import arc.math.*;
+// import arc.math.geom.*;
+// import mindustry.entities.*;
+// import mindustry.gen.*;
 
 public class JBBullets {
 
-    public static BulletType burst, singularityPoint;
+    public static BulletType burst, singularityPoint, entropyBolt;
 
     public static void load() {
 
@@ -84,7 +89,6 @@ public class JBBullets {
 
                     @Override
                     public void update(Bullet b) {
-                        // Виконуємо притягування в перші кадри життя (поки діє колапс)
                         if (b.time < 1f) {
                             Units.nearbyEnemies(b.team, b.x, b.y, splashDamageRadius, unit -> {
                                 float angle = arc.math.Angles.angle(unit.x, unit.y, b.x, b.y);
@@ -106,6 +110,45 @@ public class JBBullets {
                         super.update(b);
                     }
                 };
+            }
+        };
+
+        entropyBolt = new BasicBulletType(8f, 150) {
+            {
+                lifetime = 40f;
+                width = 12f;
+                height = 12f;
+                backColor = Color.valueOf("4fdfff");
+                frontColor = Color.white;
+                hitEffect = Fx.hitLancer;
+                hitSound = JBSounds.shootGauss3;
+
+                lightning = 3;
+                lightningLength = 3;
+                lightningColor = backColor;
+
+                collidesAir = true;
+                collidesGround = true;
+                pierce = false;
+            }
+
+            @Override
+            public void hit(Bullet b, float x, float y) {
+                super.hit(b, x, y);
+
+                if (b.damage > 15f) {
+                    mindustry.gen.Unit target = mindustry.entities.Units.closestEnemy(b.team, x, y, 180f,
+                            u -> u.dst(x, y) > 10f);
+
+                    if (target != null) {
+                        // Створюємо нову кулю
+                        Bullet next = this.create(b.owner, b.team, x, y,
+                                arc.math.Angles.angle(x, y, target.x, target.y));
+                        next.damage = b.damage * 0.85f;
+
+                        Fx.chainLightning.at(x, y, 0, Color.valueOf("4fdfff"), target);
+                    }
+                }
             }
         };
     }
