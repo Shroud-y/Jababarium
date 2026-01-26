@@ -747,4 +747,32 @@ public class JBFx {
         Fill.circle(e.x, e.y, 15f * e.fin(Interp.pow5Out));
     });
 
+    public static final Effect cryoDrillWorkTiny = new Effect(35f, e -> {
+        Color cold = Color.valueOf("6ef0ff");
+
+        // світло
+        Drawf.light(e.x, e.y, e.fout() * 20f, cold, 0.18f);
+
+        // плавність появи та зникання
+        float fade = Mathf.curve(e.fin(), e.fout()); // комбінує fade-in і fade-out
+
+        for (int i = 0; i < 2; i++) {
+            float offsetX = Mathf.sin(e.id + i) * 1.2f;
+            float offsetY = Mathf.cos(e.id + i) * 1.2f;
+
+            float x = e.x + offsetX;
+            float y = e.y + offsetY;
+
+            float radius = 3f;
+
+            // прозорість з плавним появленням і зниканням
+            float alpha = fade * 0.45f;
+
+            Draw.color(cold, Color.white, alpha);
+            Fill.circle(x, y, radius);
+        }
+
+        Draw.reset();
+    });
+
 }

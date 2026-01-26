@@ -1,12 +1,13 @@
 package jababarium.content;
 
-import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
+import arc.graphics.g2d.Fill;
 import arc.graphics.g2d.Lines;
 import arc.math.Angles;
 import arc.math.Interp;
 import arc.math.Mathf;
+import arc.util.Tmp;
 import jababarium.expand.block.special.FluxReactor;
 import jababarium.expand.block.special.SelfHealingLiquidBlocks;
 import jababarium.util.graphic.DrawFunc;
@@ -16,24 +17,21 @@ import mindustry.content.Liquids;
 import mindustry.content.StatusEffects;
 import mindustry.entities.Effect;
 import mindustry.entities.pattern.ShootPattern;
+import mindustry.gen.Sounds;
 import mindustry.graphics.Drawf;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.world.Block;
 import mindustry.gen.Bullet;
 import jababarium.util.func.JBFunc;
-import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.FlakBulletType;
-import mindustry.entities.part.DrawPart.PartProgress;
-import mindustry.entities.part.RegionPart;
 import jababarium.expand.block.commandable.BombLauncher;
 import jababarium.expand.bullets.LightningLinkerBulletType;
 import jababarium.util.graphic.OptionalMultiEffect;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.distribution.*;
+import mindustry.world.blocks.production.Drill;
 import mindustry.world.consumers.ConsumeLiquid;
-import mindustry.world.draw.DrawTurret;
-// import mindustry.world.draw.*;
 import mindustry.world.meta.BuildVisibility;
 
 import static arc.graphics.g2d.Lines.lineAngle;
@@ -43,7 +41,7 @@ public class JBBlocks {
 
     public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
             fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter,
-            entropyChain;
+            entropyChain, cryostalDrill;
 
     public static void load() {
 
@@ -351,35 +349,8 @@ public class JBBlocks {
 
                 consumePower(12f);
                 consumeLiquid(Liquids.cryofluid, 0.5f);
+                heatColor = Color.valueOf("#FFC900");
 
-                drawer = new DrawTurret("singularity-needle") {
-                    {
-                        parts.add(new RegionPart("-part") {
-                            {
-                                progress = PartProgress.warmup;
-                                mirror = true;
-                                under = false;
-
-                                moveX = 4f;
-                                moveY = -2f;
-                                moveRot = -15f;
-
-                                moves.add(new PartMove(PartProgress.recoil, 0f, -3f, 0f));
-                            }
-                        });
-
-                        parts.add(new RegionPart("-glow") {
-                            {
-                                blending = Blending.additive;
-                                color = Color.valueOf("bf92f9");
-                                outline = false;
-                                mirror = false;
-                                progress = PartProgress.warmup;
-                                colorTo = Color.white;
-                            }
-                        });
-                    }
-                };
             }
         };
         entropyChain = new ItemTurret("entropy-chain") {
@@ -399,47 +370,32 @@ public class JBBlocks {
                 consumePower(6f);
 
                 ammo(
-                        Items.plastanium, JBBullets.entropyBolt,
-
-                        Items.phaseFabric, new BasicBulletType(10f, 200) {
-                            {
-                                this.hitEffect = Fx.hitLancer;
-                                this.backColor = Color.valueOf("4fdfff");
-                            }
-                        });
-
-                drawer = new DrawTurret("entropy-chain") {
-                    {
-
-                        parts.add(new RegionPart("-spinner") {
-                            {
-                                progress = PartProgress.warmup;
-                                // spin = 6f;
-                                mirror = false;
-                                under = true;
-                            }
-                        });
-
-                        parts.add(new RegionPart("-barrel") {
-                            {
-                                progress = PartProgress.recoil;
-                                moveY = -4f;
-                                mirror = false;
-                            }
-                        });
-
-                        parts.add(new RegionPart("-glow") {
-                            {
-                                blending = Blending.additive;
-                                color = Color.valueOf("4fdfff");
-                                outline = false;
-                                mirror = false;
-                            }
-                        });
-                    }
-                };
+                        Items.plastanium, JBBullets.entropyBolt);
             }
         };
 
+        cryostalDrill = new Drill("cryostal-drill") {{
+
+                requirements(Category.production, ItemStack.with(
+                        JBItems.feronium, 200,
+                        JBItems.cryostal, 150,
+                        JBItems.plastanium, 300
+                ));
+
+                size = 4;
+                health = 200;
+                drillTime = 120f;
+                itemCapacity = 30;
+                heatColor = Color.valueOf("bf92f9");
+                tier = 6;
+
+            updateEffect = JBFx.circleOut(Color.valueOf("#54D1CC"), 4f);
+
+                updateEffectChance = 0.06f;
+                drawMineItem = true;
+                ambientSound = Sounds.loopDrill;
+                ambientSoundVolume = 0.05f;
+
+            }};
     }
 }

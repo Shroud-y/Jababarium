@@ -309,6 +309,7 @@ public class FluxReactor extends PowerGenerator {
                 });
             }
 
+
             for(int i = 0; i < 8; i++){
                 Time.run(Mathf.random(100f), () -> {
                     float angle = Mathf.random(360f);
