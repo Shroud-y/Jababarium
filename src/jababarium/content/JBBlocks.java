@@ -8,7 +8,7 @@ import arc.math.Angles;
 import arc.math.Interp;
 import arc.math.Mathf;
 import jababarium.expand.block.special.FluxReactor;
-import jababarium.expand.block.special.SelfHealingConduit;
+import jababarium.expand.block.special.SelfHealingLiquidBlocks;
 import jababarium.util.graphic.DrawFunc;
 import mindustry.content.Fx;
 import mindustry.content.Items;
@@ -23,8 +23,6 @@ import mindustry.world.Block;
 import mindustry.gen.Bullet;
 import jababarium.util.func.JBFunc;
 import mindustry.entities.bullet.FlakBulletType;
-import mindustry.entities.part.DrawPart.PartMove;
-import mindustry.entities.part.DrawPart.PartProgress;
 import mindustry.entities.part.RegionPart;
 import jababarium.expand.block.commandable.BombLauncher;
 import jababarium.expand.bullets.LightningLinkerBulletType;
@@ -42,7 +40,7 @@ import static mindustry.type.ItemStack.with;
 public class JBBlocks {
 
     public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
-            fluxReactor, helix, selfhealingConduit, singularityNeedle;;
+            fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter;
 
     public static void load() {
 
@@ -300,15 +298,32 @@ public class JBBlocks {
             }
         };
 
-        selfhealingConduit = new SelfHealingConduit("self-healing conduit") {
-            {
-                requirements(Category.liquid, ItemStack.with(
-                        JBItems.cryostal, 4,
-                        JBItems.adamantium, 5,
-                        JBItems.metaglass, 7));
-                health = 30;
-            }
-        };
+        selfhealingRouter = new SelfHealingLiquidBlocks.SelfHealingRouter("self-healing-router"){{
+            requirements(Category.liquid, ItemStack.with(
+                    JBItems.cryostal, 5,
+                    JBItems.metaglass, 10,
+                    JBItems.adamantium, 7
+            ));
+        }};
+
+        selfhealingJunction = new SelfHealingLiquidBlocks.SelfHealingJunction("self-healing-junction"){{
+            requirements(Category.liquid, ItemStack.with(
+                    JBItems.cryostal, 5,
+                    JBItems.adamantium, 6,
+                    JBItems.metaglass, 9
+            ));
+            health = 30;
+        }};
+
+        selfhealingConduit = new SelfHealingLiquidBlocks.SelfHealingConduit("self-healing-conduit"){{
+            requirements(Category.liquid, ItemStack.with(
+                    JBItems.cryostal, 4,
+                    JBItems.adamantium, 5,
+                    JBItems.metaglass, 7
+            ));
+            health = 30;
+            junctionReplacement = selfhealingJunction;
+        }};
 
         singularityNeedle = new ItemTurret("singularity-needle") {
             {
