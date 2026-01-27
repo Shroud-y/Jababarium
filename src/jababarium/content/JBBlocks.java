@@ -41,7 +41,7 @@ public class JBBlocks {
 
     public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
             fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter,
-            entropyChain, cryostalDrill;
+            entropyChain, cryostalDrill, selfhealingliquidBridge;
 
     public static void load() {
 
@@ -299,6 +299,14 @@ public class JBBlocks {
             }
         };
 
+        selfhealingliquidBridge = new SelfHealingLiquidBlocks.SelfHealingLiquidBridge("self-healing-liquid-bridge"){{
+            requirements(Category.liquid, ItemStack.with(
+                    JBItems.cryostal, 5,
+                    JBItems.adamantium, 5,
+                    JBItems.metaglass, 5
+            ));
+        }};
+
         selfhealingRouter = new SelfHealingLiquidBlocks.SelfHealingRouter("self-healing-router") {
             {
                 requirements(Category.liquid, ItemStack.with(
@@ -326,6 +334,7 @@ public class JBBlocks {
                         JBItems.metaglass, 7));
                 health = 30;
                 junctionReplacement = selfhealingJunction;
+                bridgeReplacement = selfhealingliquidBridge;
             }
         };
 
@@ -384,12 +393,12 @@ public class JBBlocks {
 
                 size = 4;
                 health = 200;
-                drillTime = 120f;
+                drillTime = 30f;
                 itemCapacity = 30;
                 heatColor = Color.valueOf("bf92f9");
-                tier = 6;
+                tier = 8;
 
-            updateEffect = JBFx.circleOut(Color.valueOf("#54D1CC"), 4f);
+            updateEffect = JBFx.polyTrail(Color.valueOf("#54D1CC"), Color.valueOf("#1479A8"), 5f, 60f);
 
                 updateEffectChance = 0.06f;
                 drawMineItem = true;

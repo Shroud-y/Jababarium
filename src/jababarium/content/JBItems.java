@@ -50,7 +50,7 @@ public class JBItems {
         }};
         adamantium = new Item("adamantium", Color.valueOf("#D67E7E")){{
             cost = 2f;
-            hardness = 11;
+            hardness = 7;
         }};
 
         scrap = Items.scrap;

@@ -4,6 +4,7 @@ import arc.util.Time;
 import mindustry.world.blocks.liquid.Conduit;
 import mindustry.world.blocks.liquid.LiquidJunction;
 import mindustry.world.blocks.liquid.LiquidRouter;
+import mindustry.world.blocks.liquid.LiquidBridge;
 
 public class SelfHealingLiquidBlocks {
 
@@ -73,7 +74,6 @@ public class SelfHealingLiquidBlocks {
         }
     }
 
-    // ===================== ROUTER =====================
     public static class SelfHealingRouter extends LiquidRouter {
 
         public float healPerSecond = 7f;
@@ -97,6 +97,41 @@ public class SelfHealingLiquidBlocks {
 
                 if(liquids.current().temperature > 0.7f){
                     heal *= 0.7f;
+                }
+
+                heal(heal);
+            }
+        }
+    }
+
+    public static class SelfHealingLiquidBridge extends LiquidBridge {
+
+        public float healPerSecond = 6.5f;
+
+        public SelfHealingLiquidBridge(String name){
+            super(name);
+
+            liquidCapacity = 190f;
+            range = 8;
+            hasPower = false;
+        }
+
+        public class SelfHealingLiquidBridgeBuild extends LiquidBridgeBuild {
+
+            @Override
+            public void updateTile(){
+                super.updateTile();
+                healLogic();
+            }
+
+            void healLogic(){
+                if(!damaged()) return;
+                if(liquids.current() == null || liquids.currentAmount() <= 0.01f) return;
+
+                float heal = healPerSecond * Time.delta;
+
+                if(liquids.current().temperature > 0.7f){
+                    heal *= 0.65f;
                 }
 
                 heal(heal);
