@@ -205,7 +205,7 @@ public class CraftingBlock {
                         JBItems.plastanium, 300,
                         JBItems.surgeAlloy, 250,
                         JBItems.cryostal, 190,
-                        JBItems.pulsarite, 200));
+                        JBItems.chronite, 200));
 
                 size = 5;
                 itemCapacity = 20;

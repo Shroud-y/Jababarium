@@ -2,12 +2,10 @@ package jababarium.content;
 
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
-import arc.graphics.g2d.Fill;
 import arc.graphics.g2d.Lines;
 import arc.math.Angles;
 import arc.math.Interp;
 import arc.math.Mathf;
-import arc.util.Tmp;
 import jababarium.expand.block.special.FluxReactor;
 import jababarium.expand.block.special.SelfHealingLiquidBlocks;
 import jababarium.util.graphic.DrawFunc;
@@ -341,10 +339,10 @@ public class JBBlocks {
         singularityNeedle = new ItemTurret("singularity-needle") {
             {
                 requirements(Category.turret, with(
-                        Items.silicon, 450,
-                        JBItems.sergium, 300,
-                        Items.phaseFabric, 200,
-                        Items.plastanium, 150));
+                        JBItems.cryostal, 200,
+                        JBItems.surgeAlloy, 300,
+                        JBItems.chronite, 200,
+                        Items.plastanium, 300));
 
                 size = 6;
                 health = 2400;
@@ -368,7 +366,7 @@ public class JBBlocks {
                         Items.titanium, 200,
                         Items.plastanium, 150,
                         Items.silicon, 200,
-                        JBItems.sergium, 80));
+                        JBItems.feronium, 200));
 
                 size = 3;
                 health = 1400;
@@ -398,6 +396,8 @@ public class JBBlocks {
                 heatColor = Color.valueOf("bf92f9");
                 tier = 8;
 
+                consumePower(6f);
+
             updateEffect = JBFx.polyTrail(Color.valueOf("#54D1CC"), Color.valueOf("#1479A8"), 5f, 60f);
 
                 updateEffectChance = 0.06f;
@@ -406,5 +406,7 @@ public class JBBlocks {
                 ambientSoundVolume = 0.05f;
 
             }};
+
+
     }
 }
