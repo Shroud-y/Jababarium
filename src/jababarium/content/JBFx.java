@@ -126,6 +126,14 @@ public class JBFx {
                 Fill.circle(e.x, e.y, 2.5f * e.fout());
             }),
 
+            square45_4_45 = new Effect(45f, e -> {
+                Draw.color(e.color);
+                randLenVectors(e.id, 5, 20f * e.finpow(), (x, y) -> {
+                    Fill.square(e.x + x, e.y + y, 4f * e.fout(), 45);
+                    Drawf.light(e.x + x, e.y + y, e.fout() * 6f, e.color, 0.7f);
+                });
+            }),
+
             hugeSmokeGray = new Effect(40f, e -> {
                 Draw.color(Color.gray, Color.darkGray, e.fin());
                 Angles.randLenVectors(e.id, 6, 2.0F + 19.0F * e.finpow(),
@@ -774,5 +782,60 @@ public class JBFx {
 
         Draw.reset();
     });
+
+    public static Effect antiMatterCharge = new Effect(90f, e -> {
+
+        float fin = e.fin();
+        float fout = e.fout();
+        float warm = fin * fin;
+
+        // ✅ Плавна поява - від 0 до 1 протягом перших 20% часу
+        float fadeIn = Mathf.curve(e.fin(), 0f, 0.2f);
+
+        Color c1 = Color.valueOf("9d7aff");
+        Color c2 = Color.valueOf("5f9cff");
+
+        Draw.color(c1, c2, fin);
+        Draw.alpha(0.6f * fout * fadeIn); // ✅ Додано fadeIn
+
+        Lines.stroke(1.5f * fout * fadeIn); // ✅ Додано fadeIn
+        for(int i = 0; i < 3; i++){
+            float rot = e.time * (0.6f + i * 0.2f);
+            float radius = (6f + i * 4f) * (1f + warm * 1.5f);
+
+            Lines.circle(
+                    e.x,
+                    e.y,
+                    radius + Mathf.sinDeg(rot * 6f) * 1.5f
+            );
+        }
+
+        for(int i = 0; i < 6; i++){
+            float angle = i * 60f + e.time * 2f;
+            Tmp.v1.trns(angle, 10f + warm * 18f);
+            Lines.lineAngle(
+                    e.x + Tmp.v1.x,
+                    e.y + Tmp.v1.y,
+                    angle + 90f,
+                    6f * fout * fadeIn // ✅ Додано fadeIn
+            );
+        }
+
+        Draw.alpha(0.4f * fout * fadeIn); // ✅ Додано fadeIn
+        for(int i = 0; i < 8; i++){
+            float a = Mathf.randomSeed(e.id + i, 360f);
+            float r = Mathf.randomSeed(e.id * 2 + i, 4f, 14f) * warm;
+
+            Tmp.v1.trns(a + e.time, r);
+            Fill.circle(
+                    e.x + Tmp.v1.x,
+                    e.y + Tmp.v1.y,
+                    1.3f * fout * fadeIn // ✅ Додано fadeIn
+            );
+        }
+
+        Draw.reset();
+    });
+
 
 }

@@ -6,6 +6,8 @@ import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
 import arc.math.Angles;
 import arc.math.Interp;
+import jababarium.expand.block.special.AntiMatterWarper;
+import mindustry.type.LiquidStack;
 import mindustry.world.draw.*;
 import arc.math.Mathf;
 import jababarium.expand.block.special.FluxReactor;
@@ -46,7 +48,7 @@ public class JBBlocks {
 
     public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
             fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter,
-            entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer;
+            entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer, antiMatterWarper;
 
     public static void load() {
 
@@ -425,7 +427,7 @@ public class JBBlocks {
                         Items.surgeAlloy, 450));
 
                 health = 4600;
-                size = 5;
+                size = 9;
                 range = 440f;
                 reload = 1f;
                 recoil = 0f;
@@ -473,5 +475,18 @@ public class JBBlocks {
             }
         };
 
+
+        antiMatterWarper = new AntiMatterWarper("anti-matter-warper") {{
+            requirements(Category.units, ItemStack.with(
+                    JBItems.singularium, 700,
+                    JBItems.sergium, 1200,
+                    JBItems.amalgam, 1000
+            ));
+            size = 10;
+
+            consumePower(70f);
+            consumeItems(ItemStack.with(JBItems.singularium, 2));
+            consumeLiquids(LiquidStack.with(JBLiquids.argon, 1f));
+        }};
     }
 }

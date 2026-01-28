@@ -213,4 +213,12 @@ public class DrawFunc {
     public static float cycle(float in, float phaseOffset, float T) {
         return (in + phaseOffset) % T / T;
     }
+
+    public static void arrow(float x, float y, float width, float length, float backLength, float angle) {
+        float wx = Angles.trnsx(angle + 90, width), wy = Angles.trnsy(angle + 90, width);
+        float ox = Angles.trnsx(angle, backLength), oy = Angles.trnsy(angle, backLength);
+        float cx = Angles.trnsx(angle, length) + x, cy = Angles.trnsy(angle, length) + y;
+        Fill.tri(x + ox, y + oy, x - wx, y - wy, cx, cy);
+        Fill.tri(x + wx, y + wy, x + ox, y + oy, cx, cy);
+    }
 }
