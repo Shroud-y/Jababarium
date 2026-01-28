@@ -1,10 +1,12 @@
 package jababarium.content;
 
+import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
 import arc.math.Angles;
 import arc.math.Interp;
+import mindustry.world.draw.*;
 import arc.math.Mathf;
 import jababarium.expand.block.special.FluxReactor;
 import jababarium.expand.block.special.SelfHealingLiquidBlocks;
@@ -19,18 +21,23 @@ import mindustry.gen.Sounds;
 import mindustry.graphics.Drawf;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
+import mindustry.type.StatusEffect;
 import mindustry.world.Block;
 import mindustry.gen.Bullet;
 import jababarium.util.func.JBFunc;
+import mindustry.entities.bullet.ContinuousLaserBulletType;
 import mindustry.entities.bullet.FlakBulletType;
+import mindustry.entities.part.RegionPart;
 import jababarium.expand.block.commandable.BombLauncher;
 import jababarium.expand.bullets.LightningLinkerBulletType;
 import jababarium.util.graphic.OptionalMultiEffect;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
+import mindustry.world.blocks.defense.turrets.PowerTurret;
 import mindustry.world.blocks.distribution.*;
 import mindustry.world.blocks.production.Drill;
 import mindustry.world.consumers.ConsumeLiquid;
 import mindustry.world.meta.BuildVisibility;
+import jababarium.content.JBStatus;
 
 import static arc.graphics.g2d.Lines.lineAngle;
 import static mindustry.type.ItemStack.with;
@@ -39,7 +46,7 @@ public class JBBlocks {
 
     public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
             fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter,
-            entropyChain, cryostalDrill, selfhealingliquidBridge;
+            entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer;
 
     public static void load() {
 
@@ -297,13 +304,14 @@ public class JBBlocks {
             }
         };
 
-        selfhealingliquidBridge = new SelfHealingLiquidBlocks.SelfHealingLiquidBridge("self-healing-liquid-bridge"){{
-            requirements(Category.liquid, ItemStack.with(
-                    JBItems.cryostal, 5,
-                    JBItems.adamantium, 5,
-                    JBItems.metaglass, 5
-            ));
-        }};
+        selfhealingliquidBridge = new SelfHealingLiquidBlocks.SelfHealingLiquidBridge("self-healing-liquid-bridge") {
+            {
+                requirements(Category.liquid, ItemStack.with(
+                        JBItems.cryostal, 5,
+                        JBItems.adamantium, 5,
+                        JBItems.metaglass, 5));
+            }
+        };
 
         selfhealingRouter = new SelfHealingLiquidBlocks.SelfHealingRouter("self-healing-router") {
             {
@@ -381,13 +389,13 @@ public class JBBlocks {
             }
         };
 
-        cryostalDrill = new Drill("cryostal-drill") {{
+        cryostalDrill = new Drill("cryostal-drill") {
+            {
 
                 requirements(Category.production, ItemStack.with(
                         JBItems.feronium, 200,
                         JBItems.cryostal, 150,
-                        JBItems.plastanium, 300
-                ));
+                        JBItems.plastanium, 300));
 
                 size = 4;
                 health = 200;
@@ -398,15 +406,72 @@ public class JBBlocks {
 
                 consumePower(6f);
 
-            updateEffect = JBFx.polyTrail(Color.valueOf("#54D1CC"), Color.valueOf("#1479A8"), 5f, 60f);
+                updateEffect = JBFx.polyTrail(Color.valueOf("#54D1CC"), Color.valueOf("#1479A8"), 5f, 60f);
 
                 updateEffectChance = 0.06f;
                 drawMineItem = true;
                 ambientSound = Sounds.loopDrill;
                 ambientSoundVolume = 0.05f;
 
-            }};
+            }
+        };
 
+        ionizer = new PowerTurret("ionizer") { // TODO дополірувати
+            {
+                requirements(Category.turret, with(
+                        Items.titanium, 800,
+                        Items.silicon, 950,
+                        Items.plastanium, 600,
+                        Items.surgeAlloy, 450));
+
+                health = 4600;
+                size = 5;
+                range = 440f;
+                reload = 1f;
+                recoil = 0f;
+                shootSound = Sounds.shootLaser;
+                loopSound = Sounds.shootLaser;
+                loopSoundVolume = 1.2f;
+
+                consumePower(35f);
+                coolant = new ConsumeLiquid(Liquids.cryofluid, 1f);
+
+                heatColor = Color.valueOf("72d4ff");
+
+                shootType = new ContinuousLaserBulletType(180) {
+                    {
+                        length = 440f;
+                        hitEffect = Fx.hitLancer;
+                        drawSize = 420f;
+                        statusDuration = 120f;
+                        status = JBStatus.ionizedStatus;
+
+                        colors = new Color[] {
+                                Color.valueOf("72d4ff").a(0.3f),
+                                Color.valueOf("72d4ff"),
+                                Color.white
+                        };
+
+                        width = 9f;
+                        largeHit = true;
+                    }
+                };
+
+                drawer = new DrawTurret("ionizer") {
+                    {
+
+                        parts.add(new RegionPart("-glow") {
+                            {
+                                blending = Blending.additive;
+                                color = Color.valueOf("00a2ff");
+                                outline = false;
+                                mirror = false;
+                            }
+                        });
+                    }
+                };
+            }
+        };
 
     }
 }
