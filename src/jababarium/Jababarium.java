@@ -4,6 +4,7 @@ import arc.*;
 import arc.util.*;
 import jababarium.content.*;
 import jababarium.expand.block.CraftingBlock;
+import jababarium.expand.units.UnitConstructors;
 import mindustry.game.EventType.*;
 import mindustry.mod.*;
 import mindustry.ui.dialogs.*;
@@ -41,6 +42,8 @@ public class Jababarium extends Mod {
         JBContent.loadPriority();
         CraftingBlock.load();
         JBOres.load();
+        JBUnits.load();
+        UnitConstructors.load();
     }
 
     public static String name(String name) {

@@ -837,5 +837,46 @@ public class JBFx {
         Draw.reset();
     });
 
+    public static Effect adamantiumSynthesizerWork = new Effect(60f, e -> {
+        Draw.z(Layer.effect);
 
+        // основний колір адамантію
+        Color c1 = Color.valueOf("#E02D2D"); // світло-синій
+        Color c2 = Color.white;
+
+        float fin = e.fin();
+        float fout = e.fout();
+
+        // м’яке пульсуюче світло
+        Draw.color(c1, fout * 0.6f);
+        Fill.circle(e.x, e.y, 6f + Mathf.absin(Time.time, 6f, 1.5f));
+
+        // кільця енергії
+        Draw.color(c1, c2, fin);
+        Lines.stroke(1.4f * fout);
+
+        for(int i = 0; i < 2; i++){
+            float radius = 10f + fin * (8f + i * 4f);
+            Lines.circle(e.x, e.y, radius);
+        }
+
+        // дрібні енергетичні частинки
+        Rand rand = Fx.rand;
+        rand.setSeed(e.id);
+
+        for(int i = 0; i < 6; i++){
+            float angle = rand.random(360f);
+            float len = rand.random(4f, 10f) * fin;
+
+            Tmp.v1.trns(angle, len);
+            Draw.color(c1, fout * 0.8f);
+            Fill.circle(
+                    e.x + Tmp.v1.x,
+                    e.y + Tmp.v1.y,
+                    rand.random(0.8f, 1.4f) * fout
+            );
+        }
+
+        Draw.reset();
+    });
 }

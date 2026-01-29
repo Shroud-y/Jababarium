@@ -1,13 +1,15 @@
 package jababarium.content;
 
-import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
 import arc.math.Angles;
 import arc.math.Interp;
+import jababarium.expand.block.power.EffectPowerGenerator;
 import jababarium.expand.block.special.AntiMatterWarper;
+import mindustry.type.Item;
 import mindustry.type.LiquidStack;
+import mindustry.world.blocks.power.PowerGenerator;
 import mindustry.world.draw.*;
 import arc.math.Mathf;
 import jababarium.expand.block.special.FluxReactor;
@@ -25,16 +27,11 @@ import mindustry.gen.Sounds;
 import mindustry.graphics.Drawf;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
-import mindustry.type.StatusEffect;
 import mindustry.world.Block;
 import mindustry.gen.Bullet;
 import jababarium.util.func.JBFunc;
-import mindustry.entities.bullet.ArtilleryBulletType;
 import mindustry.entities.bullet.BasicBulletType;
-import mindustry.entities.bullet.ContinuousLaserBulletType;
 import mindustry.entities.bullet.FlakBulletType;
-import mindustry.entities.part.DrawPart.PartProgress;
-import mindustry.entities.part.RegionPart;
 import jababarium.expand.block.commandable.BombLauncher;
 import jababarium.expand.bullets.LightningLinkerBulletType;
 import jababarium.util.graphic.OptionalMultiEffect;
@@ -44,7 +41,8 @@ import mindustry.world.blocks.distribution.*;
 import mindustry.world.blocks.production.Drill;
 import mindustry.world.consumers.ConsumeLiquid;
 import mindustry.world.meta.BuildVisibility;
-import jababarium.content.JBStatus;
+
+import javax.swing.plaf.ColorUIResource;
 
 import static arc.graphics.g2d.Lines.lineAngle;
 import static mindustry.type.ItemStack.with;
@@ -53,7 +51,8 @@ public class JBBlocks {
 
     public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
             fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter,
-            entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer, antiMatterWarper, ignis, hastae;
+            entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer, antiMatterWarper, ignis, hastae,
+            adamantiumSynthesizer;
 
     public static void load() {
 
@@ -426,14 +425,14 @@ public class JBBlocks {
         ionizer = new PowerTurret("ionizer") {
             {
                 requirements(Category.turret, with(
-                        Items.titanium, 800,
+                        JBItems.pulsarite, 200,
                         Items.silicon, 950,
                         Items.plastanium, 600,
-                        Items.surgeAlloy, 450,
-                        JBItems.cryostal, 200));
+                        JBItems.chronite, 400,
+                        JBItems.cryostal, 800));
 
                 health = 4600;
-                size = 6;
+                size = 11;
                 range = 600f;
                 reload = 40f;
                 recoil = 3f;
@@ -455,7 +454,7 @@ public class JBBlocks {
                     }
                 };
 
-                shootType = new BasicBulletType(16f, 500f) {
+                shootType = new BasicBulletType(16f, 1200f) {
                     {
                         width = 50;
                         height = 24f;
@@ -499,7 +498,7 @@ public class JBBlocks {
                         JBItems.amalgam, 1000));
                 size = 10;
 
-                consumePower(70f);
+                consumePower(200f);
                 consumeItems(ItemStack.with(JBItems.singularium, 2));
                 consumeLiquids(LiquidStack.with(JBLiquids.argon, 1f));
             }
@@ -508,9 +507,9 @@ public class JBBlocks {
         ignis = new ItemTurret("ignis") {
             {
                 requirements(Category.turret,
-                        with(Items.graphite, 220, Items.titanium, 150, Items.silicon, 120, JBItems.cryostal, 100));
+                        with(Items.graphite, 220, JBItems.feronium, 200, Items.silicon, 120, JBItems.cryostal, 100));
 
-                size = 4;
+                size = 5;
                 health = 1350;
                 reload = 50f;
                 range = 350f;
@@ -524,13 +523,13 @@ public class JBBlocks {
 
                 shoot = new ShootAlternate(8f) {
                     {
-                        shots = 4;
+                        shots = 6;
                         shotDelay = 4f;
                     }
                 };
 
                 ammo(
-                        Items.graphite, new BasicBulletType(7f, 35) {
+                        Items.graphite, new BasicBulletType(7f, 95) {
                             {
                                 width = 9f;
                                 height = 12f;
@@ -545,7 +544,7 @@ public class JBBlocks {
                                 trailColor = Color.valueOf("d37f40");
                             }
                         },
-                        Items.silicon, new BasicBulletType(6f, 28) {
+                        Items.silicon, new BasicBulletType(6f, 50) {
                             {
                                 width = 7f;
                                 height = 10f;
@@ -557,7 +556,7 @@ public class JBBlocks {
                                 backColor = Color.valueOf("665c9f");
                             }
                         },
-                        Items.pyratite, new BasicBulletType(6f, 42) {
+                        Items.pyratite, new BasicBulletType(6f, 105) {
                             {
                                 width = 10f;
                                 height = 14f;
@@ -659,5 +658,32 @@ public class JBBlocks {
                 });
             }
         };
+
+        adamantiumSynthesizer = new EffectPowerGenerator("adamantium-synthesizer") {{
+            requirements(Category.power, ItemStack.with(
+                    JBItems.adamantium, 220,
+                    JBItems.cryostal, 245,
+                    JBItems.feronium, 340,
+                    JBItems.thorium, 360
+            ));
+            size = 3;
+            itemCapacity  = 30;
+            scaledHealth = 15;
+            powerProduction = 55f;
+            updateEffect = JBFx.adamantiumSynthesizerWork;
+            itemDuration = 120f;
+
+            consumeItems(ItemStack.with(JBItems.adamantium, 2));
+            consumeLiquids(LiquidStack.with(JBLiquids.cryofluid, 0.8f));
+
+            drawer = new DrawMulti(
+                    new DrawRegion(),
+                    new DrawGlowRegion("-glow"){
+                        {
+                            color = Color.valueOf("#E02D2D");
+                        }}
+
+            );
+        }};
     }
 }
