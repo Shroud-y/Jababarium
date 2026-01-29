@@ -8,7 +8,7 @@ public class JBStatus {
     public static StatusEffect ionizedStatus = new StatusEffect("ionized-status") {
         {
             color = Color.valueOf("72d4ff");
-            damage = 0.8f;
+            damage = 2f;
             effect = Fx.chainLightning;
             speedMultiplier = 0.6f;
             reloadMultiplier = 0.8f;

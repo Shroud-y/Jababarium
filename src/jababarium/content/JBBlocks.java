@@ -16,6 +16,7 @@ import mindustry.content.Items;
 import mindustry.content.Liquids;
 import mindustry.content.StatusEffects;
 import mindustry.entities.Effect;
+import mindustry.entities.pattern.ShootBarrel;
 import mindustry.entities.pattern.ShootPattern;
 import mindustry.gen.Sounds;
 import mindustry.graphics.Drawf;
@@ -25,8 +26,11 @@ import mindustry.type.StatusEffect;
 import mindustry.world.Block;
 import mindustry.gen.Bullet;
 import jababarium.util.func.JBFunc;
+import mindustry.entities.bullet.ArtilleryBulletType;
+import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.ContinuousLaserBulletType;
 import mindustry.entities.bullet.FlakBulletType;
+import mindustry.entities.part.DrawPart.PartProgress;
 import mindustry.entities.part.RegionPart;
 import jababarium.expand.block.commandable.BombLauncher;
 import jababarium.expand.bullets.LightningLinkerBulletType;
@@ -416,7 +420,7 @@ public class JBBlocks {
             }
         };
 
-        ionizer = new PowerTurret("ionizer") { // TODO дополірувати
+        ionizer = new PowerTurret("ionizer") {
             {
                 requirements(Category.turret, with(
                         Items.titanium, 800,
@@ -425,53 +429,62 @@ public class JBBlocks {
                         Items.surgeAlloy, 450));
 
                 health = 4600;
-                size = 5;
-                range = 440f;
-                reload = 1f;
-                recoil = 0f;
-                shootSound = Sounds.shootLaser;
-                loopSound = Sounds.shootLaser;
-                loopSoundVolume = 1.2f;
+                size = 6;
+                range = 600f;
+                reload = 40f;
+                recoil = 3f;
+                shake = 2f;
+                shootSound = JBSounds.shootGauss1;
+                heatColor = Color.valueOf("72d4ff");
 
                 consumePower(35f);
                 coolant = new ConsumeLiquid(Liquids.cryofluid, 1f);
 
-                heatColor = Color.valueOf("72d4ff");
-
-                shootType = new ContinuousLaserBulletType(180) {
+                shoot = new ShootBarrel() {
                     {
-                        length = 440f;
-                        hitEffect = Fx.hitLancer;
-                        drawSize = 420f;
-                        statusDuration = 120f;
-                        status = JBStatus.ionizedStatus;
-
-                        colors = new Color[] {
-                                Color.valueOf("72d4ff").a(0.3f),
-                                Color.valueOf("72d4ff"),
-                                Color.white
+                        barrels = new float[] {
+                                -20f, 4f, 0f,
+                                20f, 4f, 0f
                         };
-
-                        width = 9f;
-                        largeHit = true;
+                        shots = 2;
+                        shotDelay = 5f;
                     }
                 };
 
-                drawer = new DrawTurret("ionizer") {
+                shootType = new BasicBulletType(16f, 500f) {
                     {
+                        width = 50;
+                        height = 24f;
+                        lifetime = 35f;
 
-                        parts.add(new RegionPart("-glow") {
-                            {
-                                blending = Blending.additive;
-                                color = Color.valueOf("00a2ff");
-                                outline = false;
-                                mirror = false;
-                            }
-                        });
+                        frontColor = Color.white;
+                        backColor = Color.valueOf("72d4ff");
+                        trailColor = Color.valueOf("72d4ff");
+                        trailWidth = 3f;
+                        trailLength = 20;
+
+                        status = JBStatus.ionizedStatus;
+                        statusDuration = 180f;
+
+                        hitEffect = Fx.massiveExplosion;
+                        despawnEffect = Fx.hitLancer;
                     }
                 };
+
+                smokeEffect = new Effect(50, e -> {
+                    Draw.color(heatColor);
+                    Lines.stroke(e.fout() * 5f);
+                    Lines.circle(e.x, e.y, e.fin() * 100);
+                    Lines.stroke(e.fout() * 3f);
+                    Lines.circle(e.x, e.y, e.fin() * 60);
+                    Lines.stroke(e.fout() * 3.2f);
+                    Angles.randLenVectors(e.id, 30, 18 + 80 * e.fin(), (x, y) -> {
+                        lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 14 + 5);
+                    });
+                    Draw.color(Color.white);
+                    Drawf.light(e.x, e.y, e.fout() * 120, heatColor, 0.7f);
+                });
             }
         };
-
     }
 }
