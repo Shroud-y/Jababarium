@@ -6,6 +6,8 @@ import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
 import arc.math.Angles;
 import arc.math.Interp;
+import jababarium.expand.block.special.AntiMatterWarper;
+import mindustry.type.LiquidStack;
 import mindustry.world.draw.*;
 import arc.math.Mathf;
 import jababarium.expand.block.special.FluxReactor;
@@ -50,7 +52,7 @@ public class JBBlocks {
 
     public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
             fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter,
-            entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer;
+            entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer, antiMatterWarper;
 
     public static void load() {
 
@@ -436,6 +438,13 @@ public class JBBlocks {
                 shake = 2f;
                 shootSound = JBSounds.shootGauss1;
                 heatColor = Color.valueOf("72d4ff");
+                size = 9;
+                range = 440f;
+                reload = 1f;
+                recoil = 0f;
+                shootSound = Sounds.shootLaser;
+                loopSound = Sounds.shootLaser;
+                loopSoundVolume = 1.2f;
 
                 consumePower(35f);
                 coolant = new ConsumeLiquid(Liquids.cryofluid, 1f);
@@ -484,6 +493,20 @@ public class JBBlocks {
                     Draw.color(Color.white);
                     Drawf.light(e.x, e.y, e.fout() * 120, heatColor, 0.7f);
                 });
+            }
+        };
+
+        antiMatterWarper = new AntiMatterWarper("anti-matter-warper") {
+            {
+                requirements(Category.units, ItemStack.with(
+                        JBItems.singularium, 700,
+                        JBItems.sergium, 1200,
+                        JBItems.amalgam, 1000));
+                size = 10;
+
+                consumePower(70f);
+                consumeItems(ItemStack.with(JBItems.singularium, 2));
+                consumeLiquids(LiquidStack.with(JBLiquids.argon, 1f));
             }
         };
     }
