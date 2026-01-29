@@ -428,7 +428,8 @@ public class JBBlocks {
                         Items.titanium, 800,
                         Items.silicon, 950,
                         Items.plastanium, 600,
-                        Items.surgeAlloy, 450));
+                        Items.surgeAlloy, 450,
+                        JBItems.cryostal, 200));
 
                 health = 4600;
                 size = 6;
@@ -438,13 +439,6 @@ public class JBBlocks {
                 shake = 2f;
                 shootSound = JBSounds.shootGauss1;
                 heatColor = Color.valueOf("72d4ff");
-                size = 9;
-                range = 440f;
-                reload = 1f;
-                recoil = 0f;
-                shootSound = Sounds.shootLaser;
-                loopSound = Sounds.shootLaser;
-                loopSoundVolume = 1.2f;
 
                 consumePower(35f);
                 coolant = new ConsumeLiquid(Liquids.cryofluid, 1f);
