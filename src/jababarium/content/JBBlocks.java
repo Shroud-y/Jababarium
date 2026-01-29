@@ -18,6 +18,7 @@ import mindustry.content.Items;
 import mindustry.content.Liquids;
 import mindustry.content.StatusEffects;
 import mindustry.entities.Effect;
+import mindustry.entities.pattern.ShootAlternate;
 import mindustry.entities.pattern.ShootBarrel;
 import mindustry.entities.pattern.ShootPattern;
 import mindustry.gen.Sounds;
@@ -52,7 +53,7 @@ public class JBBlocks {
 
     public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
             fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter,
-            entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer, antiMatterWarper;
+            entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer, antiMatterWarper, ignis, hastae;
 
     public static void load() {
 
@@ -501,6 +502,161 @@ public class JBBlocks {
                 consumePower(70f);
                 consumeItems(ItemStack.with(JBItems.singularium, 2));
                 consumeLiquids(LiquidStack.with(JBLiquids.argon, 1f));
+            }
+        };
+
+        ignis = new ItemTurret("ignis") {
+            {
+                requirements(Category.turret,
+                        with(Items.graphite, 220, Items.titanium, 150, Items.silicon, 120, JBItems.cryostal, 100));
+
+                size = 4;
+                health = 1350;
+                reload = 50f;
+                range = 350f;
+                recoil = 2f;
+                rotateSpeed = 6f;
+                inaccuracy = 3f;
+                shootCone = 20f;
+                ammoUseEffect = Fx.casing2;
+
+                heatColor = JBColor.thurmixRed;
+
+                shoot = new ShootAlternate(8f) {
+                    {
+                        shots = 4;
+                        shotDelay = 4f;
+                    }
+                };
+
+                ammo(
+                        Items.graphite, new BasicBulletType(7f, 35) {
+                            {
+                                width = 9f;
+                                height = 12f;
+                                lifetime = 33f;
+                                ammoMultiplier = 4;
+                                status = StatusEffects.corroded;
+                                statusDuration = 150f;
+                                frontColor = Color.valueOf("ffaa5f");
+                                backColor = Color.valueOf("d37f40");
+                                trailWidth = 1.5f;
+                                trailLength = 6;
+                                trailColor = Color.valueOf("d37f40");
+                            }
+                        },
+                        Items.silicon, new BasicBulletType(6f, 28) {
+                            {
+                                width = 7f;
+                                height = 10f;
+                                lifetime = 38f;
+                                homingPower = 0.08f;
+                                homingRange = 80f;
+                                ammoMultiplier = 5;
+                                frontColor = Color.valueOf("bf92f9");
+                                backColor = Color.valueOf("665c9f");
+                            }
+                        },
+                        Items.pyratite, new BasicBulletType(6f, 42) {
+                            {
+                                width = 10f;
+                                height = 14f;
+                                lifetime = 38f;
+                                status = StatusEffects.melting;
+                                statusDuration = 240f;
+                                makeFire = true;
+                                frontColor = Color.orange;
+                                backColor = Color.valueOf("d37f40");
+                                trailEffect = Fx.incendTrail;
+                                hitEffect = Fx.fireHit;
+                            }
+                        });
+
+                smokeEffect = new Effect(50, e -> {
+                    Draw.color(heatColor);
+                    Draw.color(Color.white);
+                    Drawf.light(e.x, e.y, e.fout() * 120, heatColor, 0.7f);
+                });
+            }
+        };
+
+        hastae = new ItemTurret("hastae") { // TODO finish bullets
+            {
+                requirements(Category.turret, with(Items.titanium, 250, Items.thorium, 150,
+                        Items.plastanium, 100,
+                        JBItems.adamantium, 100, JBItems.sergium, 50));
+
+                size = 6;
+                health = 1600;
+                range = 1000f;
+                reload = 270f; // 1.5
+                recoil = 5f;
+                shake = 3f;
+                rotateSpeed = 2.5f;
+                ammoPerShot = 3;
+                consumePower(8f);
+
+                shootSound = JBSounds.shootGauss3;
+
+                ammoUseEffect = Fx.casing2;
+
+                ammo(
+                        Items.titanium, new BasicBulletType(22f, 1400) {
+                            {
+                                width = 11f;
+                                height = 25f;
+                                lifetime = 45f;
+                                pierce = true;
+                                pierceCap = 3;
+                                frontColor = Color.valueOf("a4b8fa");
+                                backColor = Color.valueOf("919fe7");
+                                trailColor = Color.valueOf("919fe7");
+                                trailWidth = 3f;
+                                trailLength = 40;
+                                hitEffect = Fx.pointHit;
+                            }
+                        },
+
+                        Items.thorium, new BasicBulletType(22f, 1800) {
+                            {
+                                width = 12f;
+                                height = 28f;
+                                lifetime = 42f;
+                                pierce = true;
+                                pierceCap = 6;
+                                knockback = 4f;
+                                frontColor = Color.valueOf("f9a3c7");
+                                backColor = Color.valueOf("cb8ebf");
+                                trailColor = Color.valueOf("cb8ebf");
+                                trailWidth = 4f;
+                                trailLength = 50;
+                                hitEffect = Fx.blastExplosion;
+                            }
+                        },
+
+                        Items.surgeAlloy, new BasicBulletType(22f, 2500) {
+                            {
+                                width = 9f;
+                                height = 30f;
+                                lifetime = 35f;
+                                pierce = true;
+                                pierceCap = 4;
+                                lightning = 3;
+                                lightningDamage = 40;
+                                lightningLength = 10;
+                                frontColor = Color.yellow;
+                                backColor = Color.orange;
+                                trailColor = Color.yellow;
+                                trailWidth = 3.5f;
+                                trailLength = 60;
+                            }
+                        });
+
+                smokeEffect = new Effect(50, e -> {
+                    Draw.color(heatColor);
+                    Draw.color(Color.white);
+                    Drawf.light(e.x, e.y, e.fout() * 120, heatColor, 0.7f);
+                });
             }
         };
     }
