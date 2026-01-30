@@ -34,7 +34,14 @@ public class UnitConstructors {
                                     JBItems.silicon, 25,
                                     JBItems.lead, 20
                             )
-                    ));
+                    ),
+                    new UnitPlan(
+                            zanuka,
+                            60f * 15,
+                            ItemStack.with(
+                                    JBItems.graphite, 25,
+                                    JBItems.metaglass, 20
+                            )));
 
         }};
     }
