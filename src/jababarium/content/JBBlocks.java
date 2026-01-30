@@ -447,13 +447,13 @@ public class JBBlocks {
                 heatColor = Color.valueOf("72d4ff");
 
                 consumePower(35f);
-                coolant = new ConsumeLiquid(Liquids.cryofluid, 1f);
+                // coolant = new ConsumeLiquid(Liquids.cryofluid, 1f);
 
                 shoot = new ShootBarrel() {
                     {
                         barrels = new float[] {
-                                -20f, 4f, 0f,
-                                20f, 4f, 0f
+                                -25f, 4f, 0f,
+                                25f, 4f, 0f
                         };
                         shots = 2;
                         shotDelay = 5f;
@@ -487,7 +487,7 @@ public class JBBlocks {
                 smokeEffect = new Effect(30, e -> {
                     Draw.color(heatColor);
                     Lines.stroke(e.fout() * 5f);
-                    Lines.circle(e.x, e.y, e.fin() * 500);
+                    Lines.circle(e.x, e.y, e.fin() * 50);
                     Lines.stroke(e.fout() * 3f);
                     Lines.circle(e.x, e.y, e.fin() * 30);
                     Lines.stroke(e.fout() * 3.2f);
@@ -620,33 +620,6 @@ public class JBBlocks {
                 };
 
                 ammo(
-                        Items.titanium, new BasicBulletType(75f, 5200) {
-                            {
-                                width = 12f;
-                                height = 80f;
-                                lifetime = 30f;
-
-                                hitSize = 10f;
-                                pierce = true;
-                                pierceCap = 8;
-
-                                frontColor = Color.white;
-                                backColor = Color.valueOf("a4b8fa");
-
-                                trailColor = Color.valueOf("a4b8fa");
-                                trailWidth = 5f;
-                                trailLength = 45;
-
-                                hitEffect = Fx.massiveExplosion;
-                                despawnEffect = Fx.railHit;
-                                hitSound = JBSounds.blast;
-                                // shootEffect = Fx.shootBigType;
-                                shootEffect = Fx.shootBigColor;
-                                hitEffect = Fx.massiveExplosion;
-                                despawnEffect = Fx.scatheExplosion;
-                            }
-                        },
-
                         Items.surgeAlloy, new BasicBulletType(75f, 11400) {
                             {
                                 width = 15f;
