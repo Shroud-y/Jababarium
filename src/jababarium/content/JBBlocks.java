@@ -3,6 +3,7 @@ package jababarium.content;
 import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
+import arc.graphics.g2d.Fill;
 import arc.graphics.g2d.Lines;
 import arc.math.Angles;
 import arc.math.Interp;
@@ -22,6 +23,7 @@ import mindustry.content.Items;
 import mindustry.content.Liquids;
 import mindustry.content.StatusEffects;
 import mindustry.entities.Effect;
+import mindustry.entities.Lightning;
 import mindustry.entities.pattern.ShootAlternate;
 import mindustry.entities.pattern.ShootBarrel;
 import mindustry.entities.pattern.ShootPattern;
@@ -58,7 +60,7 @@ public class JBBlocks {
     public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
             fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter,
             entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer, antiMatterWarper, ignis, hastae,
-            adamantiumSynthesizer;
+            adamantiumSynthesizer, overlord;
 
     public static void load() {
 
@@ -232,6 +234,142 @@ public class JBBlocks {
             }
         };
 
+        selfhealingliquidBridge = new SelfHealingLiquidBlocks.SelfHealingLiquidBridge("self-healing-liquid-bridge") {
+            {
+                requirements(Category.liquid, ItemStack.with(
+                        JBItems.cryostal, 5,
+                        JBItems.adamantium, 5,
+                        JBItems.metaglass, 5));
+            }
+        };
+
+        selfhealingRouter = new SelfHealingLiquidBlocks.SelfHealingRouter("self-healing-router") {
+            {
+                requirements(Category.liquid, ItemStack.with(
+                        JBItems.cryostal, 5,
+                        JBItems.metaglass, 10,
+                        JBItems.adamantium, 7));
+            }
+        };
+
+        selfhealingJunction = new SelfHealingLiquidBlocks.SelfHealingJunction("self-healing-junction") {
+            {
+                requirements(Category.liquid, ItemStack.with(
+                        JBItems.cryostal, 5,
+                        JBItems.adamantium, 6,
+                        JBItems.metaglass, 9));
+                health = 30;
+            }
+        };
+
+        selfhealingConduit = new SelfHealingLiquidBlocks.SelfHealingConduit("self-healing-conduit") {
+            {
+                requirements(Category.liquid, ItemStack.with(
+                        JBItems.cryostal, 4,
+                        JBItems.adamantium, 5,
+                        JBItems.metaglass, 7));
+                health = 30;
+                junctionReplacement = selfhealingJunction;
+                bridgeReplacement = selfhealingliquidBridge;
+            }
+        };
+
+        entropyChain = new ItemTurret("entropy-chain") {
+            {
+                requirements(Category.turret, with(
+                        Items.titanium, 200,
+                        Items.plastanium, 150,
+                        Items.silicon, 200,
+                        JBItems.feronium, 200));
+
+                size = 3;
+                health = 1400;
+                range = 260f;
+                reload = 40f;
+                inaccuracy = 5f;
+
+                consumePower(6f);
+
+                ammo(
+                        Items.plastanium, JBBullets.entropyBolt);
+            }
+        };
+
+        ignis = new ItemTurret("ignis") {
+            {
+                requirements(Category.turret,
+                        with(Items.graphite, 220, JBItems.feronium, 200, Items.silicon, 120, JBItems.cryostal, 100));
+
+                size = 5;
+                health = 1350;
+                reload = 50f;
+                range = 350f;
+                recoil = 2f;
+                rotateSpeed = 6f;
+                inaccuracy = 3f;
+                shootCone = 20f;
+                ammoUseEffect = Fx.casing2;
+
+                heatColor = JBColor.thurmixRed;
+
+                shoot = new ShootAlternate(8f) {
+                    {
+                        shots = 6;
+                        shotDelay = 4f;
+                    }
+                };
+
+                ammo(
+                        Items.graphite, new BasicBulletType(7f, 95) {
+                            {
+                                width = 9f;
+                                height = 12f;
+                                lifetime = 50f;
+                                ammoMultiplier = 4;
+                                status = StatusEffects.corroded;
+                                statusDuration = 150f;
+                                frontColor = Color.valueOf("ffaa5f");
+                                backColor = Color.valueOf("d37f40");
+                                trailWidth = 1.5f;
+                                trailLength = 6;
+                                trailColor = Color.valueOf("d37f40");
+                            }
+                        },
+                        Items.silicon, new BasicBulletType(6f, 50) {
+                            {
+                                width = 7f;
+                                height = 10f;
+                                lifetime = 58f;
+                                homingPower = 0.08f;
+                                homingRange = 80f;
+                                ammoMultiplier = 5;
+                                frontColor = Color.valueOf("bf92f9");
+                                backColor = Color.valueOf("665c9f");
+                            }
+                        },
+                        Items.pyratite, new BasicBulletType(6f, 105) {
+                            {
+                                width = 10f;
+                                height = 14f;
+                                lifetime = 58f;
+                                status = StatusEffects.melting;
+                                statusDuration = 240f;
+                                makeFire = true;
+                                frontColor = Color.orange;
+                                backColor = Color.valueOf("d37f40");
+                                trailEffect = Fx.incendTrail;
+                                hitEffect = Fx.fireHit;
+                            }
+                        });
+
+                smokeEffect = new Effect(50, e -> {
+                    Draw.color(heatColor);
+                    Draw.color(Color.white);
+                    Drawf.light(e.x, e.y, e.fout() * 120, heatColor, 0.7f);
+                });
+            }
+        };
+
         helix = new ItemTurret("helix") {
             {
                 armor = 30;
@@ -316,46 +454,6 @@ public class JBBlocks {
             }
         };
 
-        selfhealingliquidBridge = new SelfHealingLiquidBlocks.SelfHealingLiquidBridge("self-healing-liquid-bridge") {
-            {
-                requirements(Category.liquid, ItemStack.with(
-                        JBItems.cryostal, 5,
-                        JBItems.adamantium, 5,
-                        JBItems.metaglass, 5));
-            }
-        };
-
-        selfhealingRouter = new SelfHealingLiquidBlocks.SelfHealingRouter("self-healing-router") {
-            {
-                requirements(Category.liquid, ItemStack.with(
-                        JBItems.cryostal, 5,
-                        JBItems.metaglass, 10,
-                        JBItems.adamantium, 7));
-            }
-        };
-
-        selfhealingJunction = new SelfHealingLiquidBlocks.SelfHealingJunction("self-healing-junction") {
-            {
-                requirements(Category.liquid, ItemStack.with(
-                        JBItems.cryostal, 5,
-                        JBItems.adamantium, 6,
-                        JBItems.metaglass, 9));
-                health = 30;
-            }
-        };
-
-        selfhealingConduit = new SelfHealingLiquidBlocks.SelfHealingConduit("self-healing-conduit") {
-            {
-                requirements(Category.liquid, ItemStack.with(
-                        JBItems.cryostal, 4,
-                        JBItems.adamantium, 5,
-                        JBItems.metaglass, 7));
-                health = 30;
-                junctionReplacement = selfhealingJunction;
-                bridgeReplacement = selfhealingliquidBridge;
-            }
-        };
-
         singularityNeedle = new ItemTurret("singularity-needle") {
             {
                 requirements(Category.turret, with(
@@ -378,26 +476,6 @@ public class JBBlocks {
                 consumeLiquid(Liquids.cryofluid, 0.5f);
                 heatColor = Color.valueOf("#FFC900");
 
-            }
-        };
-        entropyChain = new ItemTurret("entropy-chain") {
-            {
-                requirements(Category.turret, with(
-                        Items.titanium, 200,
-                        Items.plastanium, 150,
-                        Items.silicon, 200,
-                        JBItems.feronium, 200));
-
-                size = 3;
-                health = 1400;
-                range = 260f;
-                reload = 40f;
-                inaccuracy = 5f;
-
-                consumePower(6f);
-
-                ammo(
-                        Items.plastanium, JBBullets.entropyBolt);
             }
         };
 
@@ -425,6 +503,118 @@ public class JBBlocks {
                 ambientSound = Sounds.loopDrill;
                 ambientSoundVolume = 0.05f;
 
+            }
+        };
+
+        overlord = new PowerTurret("overlord") {
+            {
+                requirements(Category.turret, with(
+                        Items.surgeAlloy, 600,
+                        Items.plastanium, 450,
+                        Items.phaseFabric, 350,
+                        Items.silicon, 800,
+                        JBItems.adamantium, 400));
+
+                size = 5;
+                health = 3800;
+                range = 500f;
+                reload = 360f;
+                recoil = 8f;
+                recoilTime = 180f;
+                shake = 5f;
+
+                consumePower(30f);
+                consumeCoolant(1f);
+
+                heatColor = Color.valueOf("bf92f9");
+
+                shootSound = JBSounds.blastShockwave;
+                chargeSound = JBSounds.blastShockwave;
+
+                shoot = new ShootPattern() {
+                    {
+                        firstShotDelay = 120f;
+                    }
+                };
+
+                drawer = new DrawTurret() {
+                    {
+                        parts.add(new RegionPart("-glow") {
+                            {
+                                blending = Blending.additive;
+                                color = heatColor;
+                                progress = PartProgress.charge;
+                                outline = false;
+                            }
+                        });
+                    }
+                };
+
+                ammoUseEffect = new Effect(120f, e -> {
+                    Draw.color(heatColor);
+                    Lines.stroke(Mathf.curve(e.fin(), 0, 1) * 4f);
+                    Lines.circle(e.x, e.y, e.fout() * 100f);
+
+                    Draw.color(Color.white);
+                    Drawf.light(e.x, e.y, e.fin() * 150f, heatColor, 0.8f);
+
+                    Angles.randLenVectors(e.id, 40, 20f + e.fin() * 100f, (x, y) -> {
+                        Fill.circle(e.x + x, e.y + y, e.fout() * 3f + 1f);
+                    });
+                });
+
+                shootEffect = new Effect(60f, e -> {
+                    Draw.color(heatColor);
+                    Lines.stroke(e.fout() * 5f);
+                    Lines.circle(e.x, e.y, e.fin() * 130f);
+                    Drawf.light(e.x, e.y, e.fout() * 200f, heatColor, 0.9f);
+                    Fx.massiveExplosion.at(e.x, e.y, heatColor);
+                });
+
+                shootType = new BasicBulletType(3.5f, 600f) {
+                    {
+                        width = 45f;
+                        height = 45f;
+                        shrinkX = 0f;
+                        shrinkY = 0f;
+                        spin = 1f;
+                        lifetime = 160f;
+
+                        pierce = true;
+                        pierceCap = 3;
+                        absorbable = false;
+
+                        frontColor = Color.white;
+                        backColor = Color.valueOf("bf92f9");
+                        trailColor = Color.valueOf("995dff");
+                        trailWidth = 18f;
+                        trailLength = 80;
+
+                        hitEffect = Fx.impactReactorExplosion;
+                        despawnEffect = Fx.none;
+                        hitSound = JBSounds.blastShockwave;
+
+                        lightningColor = Color.valueOf("bf92f9");
+                        lightningDamage = 90f;
+                        lightningLength = 25;
+                        lightningLengthRand = 15;
+                    }
+
+                    @Override
+                    public void update(Bullet b) {
+                        super.update(b);
+
+                        if (b.timer.get(1, 5f)) {
+                            Fx.sparkShoot.at(b.x, b.y, b.rotation() + 90, lightningColor);
+                            Lightning.create(b.team, lightningColor, lightningDamage, b.x, b.y, b.rotation() + 90,
+                                    lightningLength + Mathf.range(lightningLengthRand));
+
+                            Fx.sparkShoot.at(b.x, b.y, b.rotation() - 90, lightningColor);
+                            Lightning.create(b.team, lightningColor, lightningDamage, b.x, b.y, b.rotation() - 90,
+                                    lightningLength + Mathf.range(lightningLengthRand));
+                        }
+                    }
+                };
             }
         };
 
@@ -511,81 +701,6 @@ public class JBBlocks {
                 consumePower(200f);
                 consumeItems(ItemStack.with(JBItems.singularium, 2));
                 consumeLiquids(LiquidStack.with(JBLiquids.argon, 1f));
-            }
-        };
-
-        ignis = new ItemTurret("ignis") {
-            {
-                requirements(Category.turret,
-                        with(Items.graphite, 220, JBItems.feronium, 200, Items.silicon, 120, JBItems.cryostal, 100));
-
-                size = 5;
-                health = 1350;
-                reload = 50f;
-                range = 350f;
-                recoil = 2f;
-                rotateSpeed = 6f;
-                inaccuracy = 3f;
-                shootCone = 20f;
-                ammoUseEffect = Fx.casing2;
-
-                heatColor = JBColor.thurmixRed;
-
-                shoot = new ShootAlternate(8f) {
-                    {
-                        shots = 6;
-                        shotDelay = 4f;
-                    }
-                };
-
-                ammo(
-                        Items.graphite, new BasicBulletType(7f, 95) {
-                            {
-                                width = 9f;
-                                height = 12f;
-                                lifetime = 50f;
-                                ammoMultiplier = 4;
-                                status = StatusEffects.corroded;
-                                statusDuration = 150f;
-                                frontColor = Color.valueOf("ffaa5f");
-                                backColor = Color.valueOf("d37f40");
-                                trailWidth = 1.5f;
-                                trailLength = 6;
-                                trailColor = Color.valueOf("d37f40");
-                            }
-                        },
-                        Items.silicon, new BasicBulletType(6f, 50) {
-                            {
-                                width = 7f;
-                                height = 10f;
-                                lifetime = 58f;
-                                homingPower = 0.08f;
-                                homingRange = 80f;
-                                ammoMultiplier = 5;
-                                frontColor = Color.valueOf("bf92f9");
-                                backColor = Color.valueOf("665c9f");
-                            }
-                        },
-                        Items.pyratite, new BasicBulletType(6f, 105) {
-                            {
-                                width = 10f;
-                                height = 14f;
-                                lifetime = 58f;
-                                status = StatusEffects.melting;
-                                statusDuration = 240f;
-                                makeFire = true;
-                                frontColor = Color.orange;
-                                backColor = Color.valueOf("d37f40");
-                                trailEffect = Fx.incendTrail;
-                                hitEffect = Fx.fireHit;
-                            }
-                        });
-
-                smokeEffect = new Effect(50, e -> {
-                    Draw.color(heatColor);
-                    Draw.color(Color.white);
-                    Drawf.light(e.x, e.y, e.fout() * 120, heatColor, 0.7f);
-                });
             }
         };
 
