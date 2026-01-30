@@ -9,7 +9,7 @@ import mindustry.type.UnitType;
 
 public class JBUnits {
 
-    public static UnitType scout;
+    public static UnitType scout, zanuka;
 
     public static void load(){
 
@@ -34,6 +34,28 @@ public class JBUnits {
                 )
                 .build();
         scout.constructor = UnitEntity::create;
+
+        zanuka = UnitBuilder.create("zanuka")
+                .flying()
+                .health(500f)
+                .speed(3.1f)
+                .outlineRadius(0)
+                .engine(2, 3f, Color.valueOf("6ec6ff"))
+                .weapon(
+                        WeaponBuilder.create("zanuka-gun")
+                                .reload(30f)
+                                .bullet(new BasicBulletType(4f, 20){{
+                                    width = 6f;
+                                    height = 8f;
+                                    lifetime = 40f;
+                                    hitEffect = Fx.hitBulletSmall;
+                                    despawnEffect = Fx.none;
+                                }})
+                                .range(160f)
+                                .build()
+                )
+                .build();
+        zanuka.constructor = UnitEntity::create;
     }
 
 }
