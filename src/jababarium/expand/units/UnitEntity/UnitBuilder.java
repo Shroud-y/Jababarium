@@ -12,7 +12,6 @@ public class UnitBuilder {
 
     private UnitBuilder(String name){
         unit = new UnitType(name);
-
         unit.engines = new Seq<>();
     }
 
@@ -78,5 +77,10 @@ public class UnitBuilder {
 
     public UnitType build(){
         return unit;
+    }
+
+    public UnitBuilder hitSize(float size){
+        unit.hitSize = size;
+        return this;
     }
 }

@@ -509,7 +509,7 @@ public class JBBlocks {
             }
         };
 
-        overlord = new PowerTurret("overlord") {
+        overlord = new PowerTurret("overlord") { //TODO Fix glow
             {
                 requirements(Category.turret, with(
                         Items.surgeAlloy, 600,
@@ -621,7 +621,7 @@ public class JBBlocks {
             }
         };
 
-        transgression = new PowerTurret("transgression") {
+        transgression = new PowerTurret("transgression") { //TODO Fix glow and sound
             {
                 requirements(Category.turret, with(
                         Items.silicon, 1200,
@@ -629,7 +629,7 @@ public class JBBlocks {
                         Items.phaseFabric, 400,
                         JBItems.adamantium, 250));
 
-                size = 4;
+                size = 5;
                 health = 3500;
                 range = 400f;
 
@@ -646,13 +646,6 @@ public class JBBlocks {
 
                 drawer = new DrawTurret() {
                     {
-                        parts.add(new RegionPart("-lens") {
-                            {
-                                under = true;
-                                moveY = -2f;
-                                progress = PartProgress.warmup;
-                            }
-                        });
                         parts.add(new RegionPart("-glow") {
                             {
                                 blending = Blending.additive;

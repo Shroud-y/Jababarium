@@ -4,8 +4,6 @@ import arc.audio.Sound;
 import mindustry.entities.bullet.*;
 import mindustry.type.Weapon;
 
-import static mindustry.gen.Groups.bullet;
-
 public class WeaponBuilder {
     Weapon w;
 
@@ -54,7 +52,33 @@ public class WeaponBuilder {
         return this;
     }
 
-    public Weapon build(){
+    public Weapon build() {
         return w;
+    }
+
+    public WeaponBuilder rotate(boolean r){
+        w.rotate = r;
+        return this;
+    }
+
+    public WeaponBuilder mirror(boolean m){
+        w.mirror = m;
+        return this;
+    }
+
+    public WeaponBuilder pos(float x, float y){
+        w.x = x;
+        w.y = y;
+        return this;
+    }
+
+    public WeaponBuilder top(boolean t){
+        w.top = t;
+        return this;
+    }
+
+    public WeaponBuilder layer(float l){
+        w.layerOffset = l;
+        return this;
     }
 }
