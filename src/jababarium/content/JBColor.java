@@ -26,10 +26,10 @@ public class JBColor {
             trail = Color.lightGray.cpy().lerp(Color.gray, 0.65f),
             thermoPst = Color.valueOf("CFFF87").lerp(Color.white, 0.15f),
             powerArea = Pal.power.cpy().a(0.5f),
-            xenEmpty = Color.valueOf("a3a9ad"),
-            xenAlpha = Color.valueOf("abc8dc"),
-            xenBeta = Color.valueOf("94caed"),
-            xenGamma = Color.valueOf("78c9ff"),
+            xenEmpty = Color.valueOf("#a3a9ad"),
+            xenAlpha = Color.valueOf("#abc8dc"),
+            yellow = Color.valueOf("#f0ffce"),
+            xenGamma = Color.valueOf("#78c9ff"),
             nectrone = Color.valueOf("#4EC225"),
             cryostal = Color.valueOf("#2AE4EB"),
             chroniteBase = ancient.cpy().lerp(Color.gray, 0.55f),
@@ -40,8 +40,6 @@ public class JBColor {
             chroniteGlow = chroniteBase.cpy().lerp(Color.white, 0.22f).a(0.55f),
             pulsariteBase = Color.gray.cpy().lerp(JBColor.nectrone, 0.25f),
             green = Color.valueOf("##5CE65C");
-
-
 
     static {
         Colors.put("heal", Pal.heal);

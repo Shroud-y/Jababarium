@@ -1,5 +1,6 @@
 package jababarium.content;
 
+import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
@@ -12,6 +13,7 @@ import mindustry.type.LiquidStack;
 import mindustry.world.blocks.power.PowerGenerator;
 import mindustry.world.draw.*;
 import arc.math.Mathf;
+import jababarium.util.graphic.DrawFunc;
 import jababarium.expand.block.special.FluxReactor;
 import jababarium.expand.block.special.SelfHealingLiquidBlocks;
 import jababarium.util.graphic.DrawFunc;
@@ -32,6 +34,10 @@ import mindustry.gen.Bullet;
 import jababarium.util.func.JBFunc;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.FlakBulletType;
+import mindustry.entities.bullet.RailBulletType;
+import mindustry.entities.part.DrawPart;
+import mindustry.entities.part.DrawPart.PartProgress;
+import mindustry.entities.part.RegionPart;
 import jababarium.expand.block.commandable.BombLauncher;
 import jababarium.expand.bullets.LightningLinkerBulletType;
 import jababarium.util.graphic.OptionalMultiEffect;
@@ -460,6 +466,10 @@ public class JBBlocks {
                         height = 24f;
                         lifetime = 35f;
 
+                        homingPower = 0.08f;
+                        homingRange = 50f;
+                        homingDelay = 5f;
+
                         frontColor = Color.white;
                         backColor = Color.valueOf("72d4ff");
                         trailColor = Color.valueOf("72d4ff");
@@ -470,16 +480,16 @@ public class JBBlocks {
                         statusDuration = 180f;
 
                         hitEffect = Fx.massiveExplosion;
-                        despawnEffect = Fx.hitLancer;
+                        despawnEffect = Fx.bigShockwave;
                     }
                 };
 
-                smokeEffect = new Effect(50, e -> {
+                smokeEffect = new Effect(30, e -> {
                     Draw.color(heatColor);
                     Lines.stroke(e.fout() * 5f);
-                    Lines.circle(e.x, e.y, e.fin() * 100);
+                    Lines.circle(e.x, e.y, e.fin() * 500);
                     Lines.stroke(e.fout() * 3f);
-                    Lines.circle(e.x, e.y, e.fin() * 60);
+                    Lines.circle(e.x, e.y, e.fin() * 30);
                     Lines.stroke(e.fout() * 3.2f);
                     Angles.randLenVectors(e.id, 30, 18 + 80 * e.fin(), (x, y) -> {
                         lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 14 + 5);
@@ -533,7 +543,7 @@ public class JBBlocks {
                             {
                                 width = 9f;
                                 height = 12f;
-                                lifetime = 33f;
+                                lifetime = 50f;
                                 ammoMultiplier = 4;
                                 status = StatusEffects.corroded;
                                 statusDuration = 150f;
@@ -548,7 +558,7 @@ public class JBBlocks {
                             {
                                 width = 7f;
                                 height = 10f;
-                                lifetime = 38f;
+                                lifetime = 58f;
                                 homingPower = 0.08f;
                                 homingRange = 80f;
                                 ammoMultiplier = 5;
@@ -560,7 +570,7 @@ public class JBBlocks {
                             {
                                 width = 10f;
                                 height = 14f;
-                                lifetime = 38f;
+                                lifetime = 58f;
                                 status = StatusEffects.melting;
                                 statusDuration = 240f;
                                 makeFire = true;
@@ -579,111 +589,126 @@ public class JBBlocks {
             }
         };
 
-        hastae = new ItemTurret("hastae") { // TODO finish bullets
+        hastae = new ItemTurret("hastae") {
             {
-                requirements(Category.turret, with(Items.titanium, 250, Items.thorium, 150,
+                requirements(Category.turret, with(
+                        Items.titanium, 250,
+                        Items.thorium, 150,
                         Items.plastanium, 100,
-                        JBItems.adamantium, 100, JBItems.sergium, 50));
+                        JBItems.adamantium, 100,
+                        JBItems.sergium, 500));
 
                 size = 6;
-                health = 1600;
-                range = 1000f;
-                reload = 270f; // 1.5
-                recoil = 5f;
-                shake = 3f;
-                rotateSpeed = 2.5f;
-                ammoPerShot = 3;
-                consumePower(8f);
+                health = 2200;
+                range = 2000f;
+                reload = 1000f;
 
+                recoil = 15f;
+                recoilTime = 1000f;
+                shake = 6f;
+                rotateSpeed = 0.5f;
+
+                heatColor = JBColor.yellow;
+
+                consumePower(12f);
                 shootSound = JBSounds.shootGauss3;
 
-                ammoUseEffect = Fx.casing2;
+                shoot = new ShootPattern() {
+                    {
+                        firstShotDelay = 60f;
+                    }
+                };
 
                 ammo(
-                        Items.titanium, new BasicBulletType(22f, 1400) {
-                            {
-                                width = 11f;
-                                height = 25f;
-                                lifetime = 45f;
-                                pierce = true;
-                                pierceCap = 3;
-                                frontColor = Color.valueOf("a4b8fa");
-                                backColor = Color.valueOf("919fe7");
-                                trailColor = Color.valueOf("919fe7");
-                                trailWidth = 3f;
-                                trailLength = 40;
-                                hitEffect = Fx.pointHit;
-                            }
-                        },
-
-                        Items.thorium, new BasicBulletType(22f, 1800) {
+                        Items.titanium, new BasicBulletType(75f, 5200) {
                             {
                                 width = 12f;
-                                height = 28f;
-                                lifetime = 42f;
+                                height = 80f;
+                                lifetime = 30f;
+
+                                hitSize = 10f;
                                 pierce = true;
-                                pierceCap = 6;
-                                knockback = 4f;
-                                frontColor = Color.valueOf("f9a3c7");
-                                backColor = Color.valueOf("cb8ebf");
-                                trailColor = Color.valueOf("cb8ebf");
-                                trailWidth = 4f;
-                                trailLength = 50;
-                                hitEffect = Fx.blastExplosion;
+                                pierceCap = 8;
+
+                                frontColor = Color.white;
+                                backColor = Color.valueOf("a4b8fa");
+
+                                trailColor = Color.valueOf("a4b8fa");
+                                trailWidth = 5f;
+                                trailLength = 45;
+
+                                hitEffect = Fx.massiveExplosion;
+                                despawnEffect = Fx.railHit;
+                                hitSound = JBSounds.blast;
+                                // shootEffect = Fx.shootBigType;
+                                shootEffect = Fx.shootBigColor;
+                                hitEffect = Fx.massiveExplosion;
+                                despawnEffect = Fx.scatheExplosion;
                             }
                         },
 
-                        Items.surgeAlloy, new BasicBulletType(22f, 2500) {
+                        Items.surgeAlloy, new BasicBulletType(75f, 11400) {
                             {
-                                width = 9f;
-                                height = 30f;
-                                lifetime = 35f;
+                                width = 15f;
+                                height = 100f;
+                                lifetime = 30f;
+
                                 pierce = true;
-                                pierceCap = 4;
-                                lightning = 3;
-                                lightningDamage = 40;
-                                lightningLength = 10;
-                                frontColor = Color.yellow;
+                                pierceCap = -1;
+
+                                frontColor = Color.white;
                                 backColor = Color.orange;
-                                trailColor = Color.yellow;
-                                trailWidth = 3.5f;
+
+                                trailColor = JBColor.yellow;
+                                trailWidth = 7f;
                                 trailLength = 60;
+
+                                lightning = 5;
+                                lightningDamage = 150;
+                                lightningLength = 20;
+
+                                hitEffect = Fx.instBomb;
+                                hitSound = JBSounds.blast;
+                                // shootEffect = Fx.shootBigType;
+                                shootEffect = Fx.shootBigColor;
+                                hitEffect = Fx.massiveExplosion;
+                                despawnEffect = Fx.scatheExplosion;
                             }
                         });
 
-                smokeEffect = new Effect(50, e -> {
-                    Draw.color(heatColor);
-                    Draw.color(Color.white);
-                    Drawf.light(e.x, e.y, e.fout() * 120, heatColor, 0.7f);
-                });
+                smokeEffect = Fx.coreExplosion;
+
             }
+
         };
 
-        adamantiumSynthesizer = new EffectPowerGenerator("adamantium-synthesizer") {{
-            requirements(Category.power, ItemStack.with(
-                    JBItems.adamantium, 220,
-                    JBItems.cryostal, 245,
-                    JBItems.feronium, 340,
-                    JBItems.thorium, 360
-            ));
-            size = 3;
-            itemCapacity  = 30;
-            scaledHealth = 15;
-            powerProduction = 55f;
-            updateEffect = JBFx.adamantiumSynthesizerWork;
-            itemDuration = 120f;
+        adamantiumSynthesizer = new EffectPowerGenerator("adamantium-synthesizer") {
+            {
+                requirements(Category.power, ItemStack.with(
+                        JBItems.adamantium, 220,
+                        JBItems.cryostal, 245,
+                        JBItems.feronium, 340,
+                        JBItems.thorium, 360));
+                size = 3;
+                itemCapacity = 30;
+                scaledHealth = 15;
+                powerProduction = 55f;
+                updateEffect = JBFx.adamantiumSynthesizerWork;
+                itemDuration = 120f;
 
-            consumeItems(ItemStack.with(JBItems.adamantium, 2));
-            consumeLiquids(LiquidStack.with(JBLiquids.cryofluid, 0.8f));
+                consumeItems(ItemStack.with(JBItems.adamantium, 2));
+                consumeLiquids(LiquidStack.with(JBLiquids.cryofluid, 0.8f));
 
-            drawer = new DrawMulti(
-                    new DrawRegion(),
-                    new DrawGlowRegion("-glow"){
-                        {
-                            color = Color.valueOf("#E02D2D");
-                        }}
+                drawer = new DrawMulti(
+                        new DrawRegion(),
+                        new DrawGlowRegion("-glow") {
+                            {
+                                color = Color.valueOf("#E02D2D");
+                            }
+                        }
 
-            );
-        }};
+                );
+            }
+        };
     }
 }

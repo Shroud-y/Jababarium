@@ -13,7 +13,7 @@ import mindustry.entities.bullet.PointBulletType;
 import mindustry.gen.Bullet;
 // import arc.math.*;
 // import arc.math.geom.*;
-// import mindustry.entities.*;
+// import mindustry.entities;
 // import mindustry.gen.*;
 
 public class JBBullets {
