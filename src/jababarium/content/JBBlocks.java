@@ -14,6 +14,7 @@ import mindustry.type.LiquidStack;
 import mindustry.world.blocks.power.PowerGenerator;
 import mindustry.world.draw.*;
 import arc.math.Mathf;
+import arc.util.Time;
 import jababarium.util.graphic.DrawFunc;
 import jababarium.expand.block.special.FluxReactor;
 import jababarium.expand.block.special.SelfHealingLiquidBlocks;
@@ -29,12 +30,14 @@ import mindustry.entities.pattern.ShootBarrel;
 import mindustry.entities.pattern.ShootPattern;
 import mindustry.gen.Sounds;
 import mindustry.graphics.Drawf;
+import mindustry.graphics.Layer;
 import mindustry.type.Category;
 import mindustry.type.ItemStack;
 import mindustry.world.Block;
 import mindustry.gen.Bullet;
 import jababarium.util.func.JBFunc;
 import mindustry.entities.bullet.BasicBulletType;
+import mindustry.entities.bullet.ContinuousLaserBulletType;
 import mindustry.entities.bullet.FlakBulletType;
 import mindustry.entities.bullet.RailBulletType;
 import mindustry.entities.part.DrawPart;
@@ -60,7 +63,7 @@ public class JBBlocks {
     public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
             fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter,
             entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer, antiMatterWarper, ignis, hastae,
-            adamantiumSynthesizer, overlord;
+            adamantiumSynthesizer, overlord, transgression;
 
     public static void load() {
 
@@ -591,7 +594,7 @@ public class JBBlocks {
                         trailLength = 80;
 
                         hitEffect = Fx.impactReactorExplosion;
-                        despawnEffect = Fx.none;
+                        despawnEffect = Fx.impactReactorExplosion;
                         hitSound = JBSounds.blastShockwave;
 
                         lightningColor = Color.valueOf("bf92f9");
@@ -612,6 +615,98 @@ public class JBBlocks {
                             Fx.sparkShoot.at(b.x, b.y, b.rotation() - 90, lightningColor);
                             Lightning.create(b.team, lightningColor, lightningDamage, b.x, b.y, b.rotation() - 90,
                                     lightningLength + Mathf.range(lightningLengthRand));
+                        }
+                    }
+                };
+            }
+        };
+
+        transgression = new PowerTurret("transgression") {
+            {
+                requirements(Category.turret, with(
+                        Items.silicon, 1200,
+                        Items.plastanium, 500,
+                        Items.phaseFabric, 400,
+                        JBItems.adamantium, 250));
+
+                size = 4;
+                health = 3500;
+                range = 400f;
+
+                consumePower(25f);
+                consumeLiquid(JBLiquids.nectron, 0.4f);
+
+                shootSound = JBSounds.beam;
+                loopSound = JBSounds.bioLoop;
+                loopSoundVolume = 1.5f;
+
+                shootType = JBBullets.transgression;
+
+                heatColor = Color.valueOf("84f5d9");
+
+                drawer = new DrawTurret() {
+                    {
+                        parts.add(new RegionPart("-lens") {
+                            {
+                                under = true;
+                                moveY = -2f;
+                                progress = PartProgress.warmup;
+                            }
+                        });
+                        parts.add(new RegionPart("-glow") {
+                            {
+                                blending = Blending.additive;
+                                color = heatColor;
+                                progress = PartProgress.warmup;
+                            }
+                        });
+                    }
+                };
+
+                buildType = () -> new PowerTurretBuild() {
+                    public float internalHeat = 0f;
+                    public boolean isLocked = false;
+
+                    @Override
+                    public void updateTile() {
+                        if (isLocked) {
+                            internalHeat = Mathf.approach(internalHeat, 0f, 0.003f * Time.delta);
+                            if (internalHeat <= 0.01f) {
+                                isLocked = false;
+                            }
+                        }
+
+                        if (isShooting() && !isLocked && canConsume()) {
+                            internalHeat = Mathf.approach(internalHeat, 1.2f, 0.005f * Time.delta);
+                            if (internalHeat >= 1f) {
+                                isLocked = true;
+                            }
+                        } else if (!isShooting() || isLocked) {
+                            internalHeat = Mathf.approach(internalHeat, 0f, 0.002f * Time.delta);
+                        }
+
+                        super.updateTile();
+                    }
+
+                    @Override
+                    public boolean canConsume() {
+                        return super.canConsume() && !isLocked;
+                    }
+
+                    @Override
+                    public boolean shouldConsume() {
+                        return isShooting() && !isLocked;
+                    }
+
+                    @Override
+                    public void draw() {
+                        super.draw();
+                        if (internalHeat > 0.1f) {
+                            Draw.z(Layer.effect);
+                            Draw.color(Color.orange, Color.red, Mathf.clamp(internalHeat - 0.5f) * 2f);
+                            Draw.alpha(internalHeat * 0.4f);
+                            Fill.rect(x, y, size * 7f, size * 7f);
+                            Draw.reset();
                         }
                     }
                 };

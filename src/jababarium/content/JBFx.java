@@ -799,18 +799,17 @@ public class JBFx {
         Draw.alpha(0.6f * fout * fadeIn); // ✅ Додано fadeIn
 
         Lines.stroke(1.5f * fout * fadeIn); // ✅ Додано fadeIn
-        for(int i = 0; i < 3; i++){
+        for (int i = 0; i < 3; i++) {
             float rot = e.time * (0.6f + i * 0.2f);
             float radius = (6f + i * 4f) * (1f + warm * 1.5f);
 
             Lines.circle(
                     e.x,
                     e.y,
-                    radius + Mathf.sinDeg(rot * 6f) * 1.5f
-            );
+                    radius + Mathf.sinDeg(rot * 6f) * 1.5f);
         }
 
-        for(int i = 0; i < 6; i++){
+        for (int i = 0; i < 6; i++) {
             float angle = i * 60f + e.time * 2f;
             Tmp.v1.trns(angle, 10f + warm * 18f);
             Lines.lineAngle(
@@ -822,7 +821,7 @@ public class JBFx {
         }
 
         Draw.alpha(0.4f * fout * fadeIn); // ✅ Додано fadeIn
-        for(int i = 0; i < 8; i++){
+        for (int i = 0; i < 8; i++) {
             float a = Mathf.randomSeed(e.id + i, 360f);
             float r = Mathf.randomSeed(e.id * 2 + i, 4f, 14f) * warm;
 
@@ -855,7 +854,7 @@ public class JBFx {
         Draw.color(c1, c2, fin);
         Lines.stroke(1.4f * fout);
 
-        for(int i = 0; i < 2; i++){
+        for (int i = 0; i < 2; i++) {
             float radius = 10f + fin * (8f + i * 4f);
             Lines.circle(e.x, e.y, radius);
         }
@@ -864,7 +863,7 @@ public class JBFx {
         Rand rand = Fx.rand;
         rand.setSeed(e.id);
 
-        for(int i = 0; i < 6; i++){
+        for (int i = 0; i < 6; i++) {
             float angle = rand.random(360f);
             float len = rand.random(4f, 10f) * fin;
 
@@ -873,10 +872,37 @@ public class JBFx {
             Fill.circle(
                     e.x + Tmp.v1.x,
                     e.y + Tmp.v1.y,
-                    rand.random(0.8f, 1.4f) * fout
-            );
+                    rand.random(0.8f, 1.4f) * fout);
         }
 
         Draw.reset();
     });
+
+    public static Effect shootCircleSmall(Color color) {
+        return get("shootCircleSmall", color, new Effect(30, e -> {
+            color(color, Color.white, e.fout() * 0.75f);
+            rand.setSeed(e.id);
+            randLenVectors(e.id, 3, 3 + 23 * e.fin(), e.rotation, 22, (x, y) -> {
+                Fill.circle(e.x + x, e.y + y, e.fout() * rand.random(1.5f, 3.2f));
+                Drawf.light(e.x + x, e.y + y, e.fout() * 4.5f, color, 0.7f);
+            });
+        }));
+    }
+
+    public static Effect lightningHitLarge(Color color) {
+        return get("lightningHitLarge", color, new Effect(50f, 180f, e -> {
+            color(color);
+            Drawf.light(e.x, e.y, e.fout() * 90f, color, 0.7f);
+            e.scaled(25f, t -> {
+                stroke(3f * t.fout());
+                circle(e.x, e.y, 3f + t.fin(Interp.pow3Out) * 80f);
+            });
+            Fill.circle(e.x, e.y, e.fout() * 8f);
+            randLenVectors(e.id + 1, 4, 1f + 60f * e.finpow(), (x, y) -> Fill.circle(e.x + x, e.y + y, e.fout() * 5f));
+
+            color(Color.gray);
+            Angles.randLenVectors(e.id, 8, 2.0F + 30.0F * e.finpow(),
+                    (x, y) -> Fill.circle(e.x + x, e.y + y, e.fout() * 4.0F + 0.5F));
+        }));
+    }
 }

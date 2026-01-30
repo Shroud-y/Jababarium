@@ -1,13 +1,18 @@
 package jababarium.content;
 
 import arc.graphics.Color;
+import arc.math.Mathf;
 // import arc.math.Angles;
 // import arc.math.Mathf;
 import mindustry.content.Fx;
+import mindustry.content.StatusEffects;
+import mindustry.entities.Effect;
+import mindustry.entities.Lightning;
 import mindustry.entities.Units;
 import mindustry.entities.bullet.ArtilleryBulletType;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.BulletType;
+import mindustry.entities.bullet.ContinuousFlameBulletType;
 // import mindustry.entities.bullet.LightningBulletType;
 import mindustry.entities.bullet.PointBulletType;
 import mindustry.gen.Bullet;
@@ -18,7 +23,7 @@ import mindustry.gen.Bullet;
 
 public class JBBullets {
 
-    public static BulletType burst, singularityPoint, entropyBolt;
+    public static BulletType burst, singularityPoint, entropyBolt, transgression;
 
     public static void load() {
 
@@ -149,6 +154,56 @@ public class JBBullets {
                         Fx.chainLightning.at(x, y, 0, Color.valueOf("4fdfff"), target);
                     }
                 }
+            }
+        };
+
+        transgression = new ContinuousFlameBulletType(300) {
+            {
+                shake = 3;
+                hitColor = flareColor = lightColor = lightningColor = JBColor.lightSkyBack;
+                colors = new Color[] { JBColor.lightSkyBack.cpy().mul(0.75f, 0.85f, 1f, 0.65f),
+                        JBColor.lightSkyBack.cpy().mul(1f, 1f, 1f, 0.65f),
+                        JBColor.lightSkyBack.cpy().lerp(JBColor.green, 0.5f), JBColor.green };
+                width = 6;
+                length = 380f;
+                oscScl = 0.9f;
+                oscMag *= 2f;
+                lifetime = 35f;
+                lightning = 4;
+                lightningLength = 2;
+                lightningLengthRand = 18;
+                flareLength = 75;
+                flareWidth = 6;
+                hitEffect = JBFx.shootCircleSmall(JBColor.lightSkyBack);
+                shootEffect = JBFx.lightningHitLarge(JBColor.lightSkyBack);
+                lightningDamage = damage / 6f;
+                despawnHit = false;
+                pierceArmor = true;
+                status = StatusEffects.burning;
+            }
+
+            @Override
+            public void update(Bullet b) {
+                super.update(b);
+
+                if (Mathf.chanceDelta(0.11))
+                    for (int i = 0; i < lightning; i++) {
+                        Lightning.create(b, lightningColor, lightningDamage < 0 ? damage : lightningDamage, b.x, b.y,
+                                b.rotation() + Mathf.range(lightningCone / 2) + lightningAngle,
+                                lightningLength + Mathf.random(lightningLengthRand));
+                    }
+            }
+
+            @Override
+            public void hit(Bullet b, float x, float y) {
+                hitEffect.at(x, y, b.rotation(), hitColor);
+                hitSound.at(x, y, hitSoundPitch, hitSoundVolume);
+
+                Effect.shake(hitShake, hitShake, b);
+
+                Lightning.create(b, lightningColor, lightningDamage < 0 ? damage : lightningDamage, x, y,
+                        b.rotation() + Mathf.range(lightningCone / 2) + lightningAngle,
+                        lightningLength + Mathf.random(lightningLengthRand));
             }
         };
     }
