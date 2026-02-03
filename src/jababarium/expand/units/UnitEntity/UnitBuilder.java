@@ -45,10 +45,14 @@ public class UnitBuilder {
         return this;
     }
 
-    public UnitBuilder engine(int count, float length, Color color){
+    public UnitBuilder engine(
+            int count,
+            float length,
+            Color color,
+            float backOffset
+    ){
         unit.engineSize = length;
         unit.engineColor = color;
-
         unit.engines.clear();
 
         for(int i = 0; i < count; i++){
@@ -56,14 +60,14 @@ public class UnitBuilder {
 
             unit.engines.add(new UnitType.UnitEngine(
                     offset,
-                    -unit.hitSize / 2f,
+                    -backOffset,
                     length / 2f,
                     270f
             ));
         }
-
         return this;
     }
+
 
     public UnitBuilder weapon(Weapon weapon){
         unit.weapons.add(weapon);
@@ -83,4 +87,10 @@ public class UnitBuilder {
         unit.hitSize = size;
         return this;
     }
+
+    public UnitBuilder lockRotation(){
+        unit.faceTarget = false;
+        return this;
+    }
+
 }

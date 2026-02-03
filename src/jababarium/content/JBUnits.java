@@ -23,7 +23,7 @@ public class JBUnits {
                 .health(420f)
                 .speed(2.8f)
                 .outlineRadius(0)
-                .engine(1, 3f, Color.valueOf("6ec6ff"))
+                .engine(1, 3f, Color.valueOf("6ec6ff"), 1f)
                 .weapon(
                         WeaponBuilder.create("scout-gun")
                                 .reload(30f)
@@ -45,7 +45,7 @@ public class JBUnits {
                 .health(500f)
                 .speed(3.1f)
                 .outlineRadius(0)
-                .engine(2, 3f, Color.valueOf("6ec6ff"))
+                .engine(2, 3f, Color.valueOf("6ec6ff"), 1f)
                 .weapon(
                         WeaponBuilder.create("zanuka-gun")
                                 .reload(30f)
@@ -66,40 +66,22 @@ public class JBUnits {
                 .flying()
                 .health(600f)
                 .speed(3f)
-                .outlineRadius(0)
-                .engine(2, 3f, Color.valueOf("6ec6ff"))
-                .hitSize(6)
+                //.outlineRadius(0)
+                .engine(3, 5f, Color.valueOf("6ec6ff"), 11f)
+                .hitSize(8)
+                .lockRotation()
                 .weapon(
                         WeaponBuilder.create("jababarium-fray-gun")
                                 .reload(15f)
                                 .rotate(true)
                                 .mirror(true)
                                 .top(true)
-                                .pos(3f, 0f)
+                                .pos(4f, -1f)
                                 .bullet(new LaserBoltBulletType(6f, 10))
                                 .build()
                 )
                 .build();
         fray.constructor = UnitEntity::create;
 
-        Log.info("=== FRAY DEBUG ===");
-        Log.info("Weapons count: @", fray.weapons.size);
-        if(fray.weapons.size > 0){
-            Weapon w = fray.weapons.first();
-            Log.info("Weapon name: @", w.name);
-            Log.info("Weapon x: @, y: @", w.x, w.y);
-            Log.info("Weapon mirror: @", w.mirror);
-            Log.info("Weapon rotate: @", w.rotate);
-            Log.info("Weapon top: @", w.top);
-
-            // Перевіряємо після load()
-            Core.app.post(() -> {
-                Log.info("After load - Region: @", w.region);
-                Log.info("Region found: @", (w.region != null && w.region.found()));
-                if (w.region != null) {
-                    Log.info("Region name: @", w.region);
-                }
-            });
-        }
     }
 }
