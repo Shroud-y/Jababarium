@@ -62,7 +62,8 @@ public class JBBlocks {
 
     public static Block manualArtillery, cryostalConveyor, cryostalRouter, cryostalJunction, cryostalBridge,
             fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter,
-            entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer, antiMatterWarper, ignis, hastae,
+            entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer, solarApex, chronos, antiMatterWarper, ignis,
+            hastae,
             adamantiumSynthesizer, overlord, transgression;
 
     public static void load() {
@@ -509,7 +510,7 @@ public class JBBlocks {
             }
         };
 
-        overlord = new PowerTurret("overlord") { //TODO Fix glow
+        overlord = new PowerTurret("overlord") {
             {
                 requirements(Category.turret, with(
                         Items.surgeAlloy, 600,
@@ -540,18 +541,11 @@ public class JBBlocks {
                     }
                 };
 
-                drawer = new DrawTurret() {
-                    {
-                        parts.add(new RegionPart("-glow") {
-                            {
-                                blending = Blending.additive;
-                                color = heatColor;
-                                progress = PartProgress.charge;
-                                outline = false;
-                            }
-                        });
-                    }
-                };
+                smokeEffect = new Effect(50, e -> {
+                    Draw.color(heatColor);
+                    Draw.color(Color.white);
+                    Drawf.light(e.x, e.y, e.fout() * 120, heatColor, 0.7f);
+                });
 
                 ammoUseEffect = new Effect(120f, e -> {
                     Draw.color(heatColor);
@@ -621,7 +615,7 @@ public class JBBlocks {
             }
         };
 
-        transgression = new PowerTurret("transgression") { //TODO Fix glow and sound
+        transgression = new PowerTurret("transgression") {
             {
                 requirements(Category.turret, with(
                         Items.silicon, 1200,
@@ -644,17 +638,11 @@ public class JBBlocks {
 
                 heatColor = Color.valueOf("84f5d9");
 
-                drawer = new DrawTurret() {
-                    {
-                        parts.add(new RegionPart("-glow") {
-                            {
-                                blending = Blending.additive;
-                                color = heatColor;
-                                progress = PartProgress.warmup;
-                            }
-                        });
-                    }
-                };
+                smokeEffect = new Effect(50, e -> {
+                    Draw.color(heatColor);
+                    Draw.color(Color.white);
+                    Drawf.light(e.x, e.y, e.fout() * 120, heatColor, 0.7f);
+                });
 
                 buildType = () -> new PowerTurretBuild() {
                     public float internalHeat = 0f;
@@ -775,6 +763,169 @@ public class JBBlocks {
                     Draw.color(Color.white);
                     Drawf.light(e.x, e.y, e.fout() * 120, heatColor, 0.7f);
                 });
+            }
+        };
+
+        solarApex = new PowerTurret("solar-apex") {
+            {
+                requirements(Category.turret, with(
+                        JBItems.singularium, 1200,
+                        JBItems.pulsarite, 1400,
+                        JBItems.sergium, 1600,
+                        Items.surgeAlloy, 1200,
+                        Items.phaseFabric, 900));
+
+                size = 11;
+                health = 9000;
+                range = 1200f;
+                reload = 240f;
+                recoil = 10f;
+                recoilTime = 120f;
+                shake = 8f;
+                rotateSpeed = 0.6f;
+                shootCone = 2f;
+
+                consumePower(120f);
+                consumeLiquid(Liquids.cryofluid, 5f);
+                coolant = new ConsumeLiquid(Liquids.cryofluid, 2.5f);
+                liquidCapacity = 480f;
+                coolantMultiplier = 3.5f;
+
+                heatColor = Color.valueOf("ffd36b");
+                shootSound = JBSounds.largeBeam;
+                loopSound = JBSounds.bioLoop;
+                loopSoundVolume = 2f;
+
+                shoot = new ShootPattern() {
+                    {
+                        firstShotDelay = 90f;
+                    }
+                };
+
+                drawer = new DrawTurret() {
+                    {
+                        parts.add(new RegionPart("-glow") {
+                            {
+                                blending = Blending.additive;
+                                color = heatColor;
+                                progress = PartProgress.warmup;
+                                outline = false;
+                            }
+                        });
+                    }
+                };
+
+                shootEffect = new Effect(70f, e -> {
+                    Draw.color(heatColor, Color.white, e.fin());
+                    Lines.stroke(e.fout() * 7f);
+                    Lines.circle(e.x, e.y, e.fin() * 200f);
+                    Drawf.light(e.x, e.y, e.fin() * 260f, heatColor, 0.9f);
+                });
+
+                ammoUseEffect = new Effect(140f, e -> {
+                    Draw.color(heatColor);
+                    Lines.stroke(Mathf.curve(e.fin(), 0, 1) * 5f);
+                    Lines.circle(e.x, e.y, e.fout() * 180f);
+                    Draw.color(Color.white);
+                    Drawf.light(e.x, e.y, e.fin() * 240f, heatColor, 0.9f);
+                });
+
+                shootType = new ContinuousLaserBulletType(4200f) {
+                    {
+                        length = 1200f;
+                        width = 26f;
+                        lifetime = 60f;
+                        hitSize = 20f;
+                        drawSize = 420f;
+                        knockback = 2.5f;
+                        pierceArmor = true;
+
+                        hitColor = lightColor = lightningColor = heatColor;
+                        colors = new Color[] {
+                                heatColor.cpy().mul(1f, 0.85f, 0.6f, 0.6f),
+                                heatColor.cpy().mul(1f, 0.9f, 0.7f, 0.8f),
+                                Color.white
+                        };
+
+                        hitEffect = Fx.impactReactorExplosion;
+                        shootEffect = Fx.shootBigColor;
+                        smokeEffect = Fx.smokeCloud;
+                        despawnEffect = Fx.none;
+
+                        status = StatusEffects.melting;
+                        statusDuration = 60f * 6f;
+                    }
+                };
+            }
+        };
+
+        chronos = new PowerTurret("chronos") { // TODO Finish
+            {
+                requirements(Category.turret, with(
+                        JBItems.chronite, 1200,
+                        JBItems.singularium, 900,
+                        JBItems.pulsarite, 1000,
+                        Items.surgeAlloy, 900,
+                        Items.phaseFabric, 700));
+
+                size = 9;
+                health = 8200;
+                range = 1000f;
+                reload = 360f;
+                recoil = 6f;
+                recoilTime = 90f;
+                shake = 6f;
+                rotateSpeed = 0.5f;
+                shootCone = 3f;
+                inaccuracy = 1.5f;
+
+                consumePower(90f);
+                consumeLiquid(Liquids.cryofluid, 3f);
+                coolant = new ConsumeLiquid(Liquids.cryofluid, 2f);
+                liquidCapacity = 360f;
+                coolantMultiplier = 3f;
+
+                heatColor = Color.valueOf("7fd6ff");
+                shootSound = JBSounds.largeBeam;
+                chargeSound = JBSounds.beam;
+                loopSound = JBSounds.bioLoop;
+                loopSoundVolume = 1.2f;
+
+                shoot = new ShootPattern() {
+                    {
+                        firstShotDelay = 90f;
+                    }
+                };
+
+                drawer = new DrawTurret() {
+                    {
+                        parts.add(new RegionPart("-glow") {
+                            {
+                                blending = Blending.additive;
+                                color = heatColor;
+                                progress = PartProgress.warmup;
+                                outline = false;
+                            }
+                        });
+                    }
+                };
+
+                shootEffect = new Effect(80f, e -> {
+                    Draw.color(heatColor, Color.white, e.fin());
+                    Lines.stroke(e.fout() * 6f);
+                    Lines.circle(e.x, e.y, e.fin() * 180f);
+                    Drawf.light(e.x, e.y, e.fin() * 220f, heatColor, 0.8f);
+                });
+
+                ammoUseEffect = new Effect(120f, e -> {
+                    Draw.color(heatColor);
+                    Lines.stroke(Mathf.curve(e.fin(), 0, 1) * 4f);
+                    Lines.circle(e.x, e.y, e.fout() * 140f);
+                    Draw.color(Color.white);
+                    Drawf.light(e.x, e.y, e.fin() * 200f, heatColor, 0.8f);
+                });
+
+                shootType = JBBullets.chronosShell;
             }
         };
 

@@ -23,7 +23,7 @@ import mindustry.gen.Bullet;
 
 public class JBBullets {
 
-    public static BulletType burst, singularityPoint, entropyBolt, transgression;
+    public static BulletType burst, singularityPoint, entropyBolt, transgression, chronosShell, chronosField;
 
     public static void load() {
 
@@ -204,6 +204,56 @@ public class JBBullets {
                 Lightning.create(b, lightningColor, lightningDamage < 0 ? damage : lightningDamage, x, y,
                         b.rotation() + Mathf.range(lightningCone / 2) + lightningAngle,
                         lightningLength + Mathf.random(lightningLengthRand));
+            }
+        };
+
+        chronosField = new BasicBulletType(0f, 0f) {
+            {
+                lifetime = 60f * 5f;
+                collides = false;
+                collidesTiles = false;
+                collidesAir = false;
+                absorbable = false;
+                pierce = true;
+                hitEffect = Fx.none;
+                despawnEffect = Fx.none;
+            }
+
+            @Override
+            public void update(Bullet b) {
+                super.update(b);
+
+                if (b.timer.get(1, 5f)) {
+                    float remaining = Math.max(0f, b.lifetime - b.time);
+                    float applyDuration = Math.min(10f, remaining);
+                    Units.nearbyEnemies(b.team, b.x, b.y, 240f, unit -> {
+                        unit.apply(JBStatus.chronosStop, applyDuration);
+                    });
+                }
+            }
+        };
+
+        chronosShell = new ArtilleryBulletType(6f, 0f) {
+            {
+                lifetime = 200f;
+                width = 16f;
+                height = 20f;
+                shrinkY = 0.3f;
+                backColor = Color.valueOf("7fd6ff");
+                frontColor = Color.white;
+                trailWidth = 3.5f;
+                trailLength = 30;
+                trailColor = backColor;
+
+                hitEffect = Fx.instBomb;
+                despawnEffect = Fx.instBomb;
+                hitSound = JBSounds.largeBeam;
+            }
+
+            @Override
+            public void hit(Bullet b, float x, float y) {
+                super.hit(b, x, y);
+                chronosField.create(b.owner, b.team, x, y, 0f);
             }
         };
     }

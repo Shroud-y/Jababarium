@@ -14,4 +14,13 @@ public class JBStatus {
             reloadMultiplier = 0.8f;
         }
     };
+
+    public static StatusEffect chronosStop = new StatusEffect("chronos-stop") {
+        {
+            color = Color.valueOf("7fd6ff");
+            speedMultiplier = 0f;
+            reloadMultiplier = 0f;
+            effect = Fx.none;
+        }
+    };
 }

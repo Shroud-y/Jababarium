@@ -7,7 +7,8 @@ public class JBSounds {
 
     public static Sound artilleryFire1, artilleryFire2, artilleryFire3, artilleryOpen1, artilleryOpen2,
             fluxReactorExplosion,
-            fluxReactorWorking, shootGauss1, shootGauss3, antimatter, missile, blast, blastShockwave, beam, bioLoop;
+            fluxReactorWorking, shootGauss1, shootGauss3, antimatter, missile, blast, blastShockwave, beam, bioLoop,
+            largeBeam;
 
     public static void load() {
         artilleryFire1 = loadSound("artilleryfire1");
@@ -25,6 +26,7 @@ public class JBSounds {
         blastShockwave = loadSound("blastShockwave");
         beam = loadSound("beam");
         bioLoop = loadSound("bioLoop");
+        largeBeam = loadSound("largeBeam");
     }
 
     private static Sound loadSound(String name) {
