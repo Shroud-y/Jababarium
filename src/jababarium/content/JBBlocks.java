@@ -1,3 +1,5 @@
+//TODO Finish turrets visual and balance
+
 package jababarium.content;
 
 import arc.graphics.Blending;
@@ -64,7 +66,7 @@ public class JBBlocks {
             fluxReactor, helix, selfhealingConduit, singularityNeedle, selfhealingJunction, selfhealingRouter,
             entropyChain, cryostalDrill, selfhealingliquidBridge, ionizer, solarApex, chronos, antiMatterWarper, ignis,
             hastae,
-            adamantiumSynthesizer, overlord, transgression;
+            adamantiumSynthesizer, overlord, transgression, apex;
 
     public static void load() {
 
@@ -522,7 +524,7 @@ public class JBBlocks {
                 size = 5;
                 health = 3800;
                 range = 500f;
-                reload = 360f;
+                reload = 720f;
                 recoil = 8f;
                 recoilTime = 180f;
                 shake = 5f;
@@ -775,7 +777,7 @@ public class JBBlocks {
                         Items.surgeAlloy, 1200,
                         Items.phaseFabric, 900));
 
-                size = 11;
+                size = 9;
                 health = 9000;
                 range = 1200f;
                 reload = 240f;
@@ -859,7 +861,7 @@ public class JBBlocks {
             }
         };
 
-        chronos = new PowerTurret("chronos") { // TODO Finish
+        chronos = new PowerTurret("chronos") {
             {
                 requirements(Category.turret, with(
                         JBItems.chronite, 1200,
@@ -940,6 +942,73 @@ public class JBBlocks {
                 consumePower(200f);
                 consumeItems(ItemStack.with(JBItems.singularium, 2));
                 consumeLiquids(LiquidStack.with(JBLiquids.argon, 1f));
+            }
+        };
+
+        apex = new PowerTurret("apex") {
+            {
+                requirements(Category.turret, with(
+                        JBItems.singularium, 1400,
+                        JBItems.sergium, 1200,
+                        JBItems.pulsarite, 1100,
+                        Items.surgeAlloy, 1200,
+                        Items.phaseFabric, 800));
+
+                size = 9;
+                health = 9500;
+                range = 1500f;
+                reload = 420f;
+                recoil = 14f;
+                recoilTime = 140f;
+                shake = 10f;
+                rotateSpeed = 0.35f;
+                shootCone = 2f;
+
+                consumePower(120f);
+                consumeLiquid(Liquids.cryofluid, 3f);
+                coolant = new ConsumeLiquid(Liquids.cryofluid, 2.5f);
+                liquidCapacity = 420f;
+                coolantMultiplier = 3.2f;
+
+                heatColor = Color.valueOf("ffb85c");
+                shootSound = JBSounds.blastShockwave;
+                chargeSound = JBSounds.largeBeam;
+
+                shoot = new ShootPattern() {
+                    {
+                        firstShotDelay = 120f;
+                    }
+                };
+
+                drawer = new DrawTurret() {
+                    {
+                        parts.add(new RegionPart("-glow") {
+                            {
+                                blending = Blending.additive;
+                                color = heatColor;
+                                progress = PartProgress.warmup;
+                                outline = false;
+                            }
+                        });
+                    }
+                };
+
+                shootEffect = new Effect(80f, e -> {
+                    Draw.color(heatColor, Color.white, e.fin());
+                    Lines.stroke(e.fout() * 8f);
+                    Lines.circle(e.x, e.y, e.fin() * 220f);
+                    Drawf.light(e.x, e.y, e.fin() * 260f, heatColor, 0.9f);
+                });
+
+                ammoUseEffect = new Effect(140f, e -> {
+                    Draw.color(heatColor);
+                    Lines.stroke(Mathf.curve(e.fin(), 0, 1) * 6f);
+                    Lines.circle(e.x, e.y, e.fout() * 200f);
+                    Draw.color(Color.white);
+                    Drawf.light(e.x, e.y, e.fin() * 240f, heatColor, 0.9f);
+                });
+
+                shootType = JBBullets.apexShell;
             }
         };
 

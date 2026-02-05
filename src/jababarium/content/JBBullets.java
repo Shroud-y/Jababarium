@@ -23,7 +23,8 @@ import mindustry.gen.Bullet;
 
 public class JBBullets {
 
-    public static BulletType burst, singularityPoint, entropyBolt, transgression, chronosShell, chronosField;
+    public static BulletType burst, singularityPoint, entropyBolt, transgression, chronosShell, chronosField, apexShell,
+            apexShard, apexMicro;
 
     public static void load() {
 
@@ -215,7 +216,7 @@ public class JBBullets {
                 collidesAir = false;
                 absorbable = false;
                 pierce = true;
-                hitEffect = Fx.none;
+                hitEffect = JBFx.circleOut(Color.valueOf("a066ff"), 240f);
                 despawnEffect = Fx.none;
             }
 
@@ -225,10 +226,13 @@ public class JBBullets {
 
                 if (b.timer.get(1, 5f)) {
                     float remaining = Math.max(0f, b.lifetime - b.time);
-                    float applyDuration = Math.min(10f, remaining);
+                    float applyDuration = Math.min(60f, remaining);
                     Units.nearbyEnemies(b.team, b.x, b.y, 240f, unit -> {
                         unit.apply(JBStatus.chronosStop, applyDuration);
                     });
+                }
+                if (b.timer.get(2, 20f)) {
+                    JBFx.circleOut(Color.valueOf("a066ff"), 240f).at(b.x, b.y);
                 }
             }
         };
@@ -239,22 +243,107 @@ public class JBBullets {
                 width = 16f;
                 height = 20f;
                 shrinkY = 0.3f;
-                backColor = Color.valueOf("7fd6ff");
-                frontColor = Color.white;
+                backColor = Color.valueOf("a066ff");
+                frontColor = Color.valueOf("ead9ff");
                 trailWidth = 3.5f;
                 trailLength = 30;
                 trailColor = backColor;
 
-                hitEffect = Fx.instBomb;
-                despawnEffect = Fx.instBomb;
+                hitEffect = JBFx.circleOut(Color.valueOf("a066ff"), 120f);
+                despawnEffect = JBFx.circleOut(Color.valueOf("a066ff"), 120f);
                 hitSound = JBSounds.largeBeam;
             }
 
             @Override
             public void hit(Bullet b, float x, float y) {
                 super.hit(b, x, y);
+                b.data = Boolean.TRUE;
                 chronosField.create(b.owner, b.team, x, y, 0f);
             }
+
+            @Override
+            public void despawned(Bullet b) {
+                if (b.data == null) {
+                    chronosField.create(b.owner, b.team, b.x, b.y, 0f);
+                }
+            }
         };
+
+        apexMicro = new BasicBulletType(7f, 180) {
+            {
+                lifetime = 45f;
+                width = 8f;
+                height = 10f;
+                homingPower = 0.12f;
+                homingRange = 220f;
+
+                frontColor = Color.white;
+                backColor = Color.valueOf("7bff9a");
+                trailColor = backColor;
+                trailWidth = 2.8f;
+                trailLength = 10;
+
+                hitEffect = Fx.hitBulletBig;
+                despawnEffect = Fx.hitBulletBig;
+                hitSound = JBSounds.shootGauss1;
+            }
+        };
+
+        apexShard = new BasicBulletType(5f, 320) {
+            {
+                lifetime = 55f;
+                width = 12f;
+                height = 18f;
+                shrinkY = 0.2f;
+
+                frontColor = Color.white;
+                backColor = Color.valueOf("4dff7a");
+                trailColor = backColor;
+                trailWidth = 3.6f;
+                trailLength = 20;
+
+                hitEffect = Fx.hitBulletColor;
+                despawnEffect = Fx.hitBulletColor;
+                hitSound = JBSounds.blast;
+
+                fragBullets = 6;
+                fragBullet = apexMicro;
+                fragVelocityMin = 0.8f;
+                fragVelocityMax = 1.6f;
+                fragLifeMin = 0.6f;
+                fragLifeMax = 1.1f;
+            }
+        };
+
+        apexShell = new ArtilleryBulletType(3.6f, 1500f) {
+            {
+                lifetime = 180f;
+                width = 30f;
+                height = 40f;
+                shrinkY = 0.3f;
+
+                splashDamage = 1400f;
+                splashDamageRadius = 160f;
+
+                frontColor = Color.white;
+                backColor = Color.valueOf("69ff6a");
+                trailColor = backColor;
+                trailWidth = 7f;
+                trailLength = 45;
+
+                hitEffect = Fx.massiveExplosion;
+                despawnEffect = Fx.scatheExplosion;
+                hitSound = JBSounds.blastShockwave;
+                hitShake = 12f;
+
+                fragBullets = 10;
+                fragBullet = apexShard;
+                fragVelocityMin = 0.7f;
+                fragVelocityMax = 1.4f;
+                fragLifeMin = 0.6f;
+                fragLifeMax = 1.2f;
+            }
+        };
+
     }
 }
