@@ -147,7 +147,7 @@ public class JBBullets {
                             u -> u.dst(x, y) > 10f);
 
                     if (target != null) {
-                        // Створюємо нову кулю
+
                         Bullet next = this.create(b.owner, b.team, x, y,
                                 arc.math.Angles.angle(x, y, target.x, target.y));
                         next.damage = b.damage * 0.85f;
