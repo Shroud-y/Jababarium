@@ -31,15 +31,12 @@ public class JBFx {
     public static final IntMap<Effect> same = new IntMap<>();
     public static final float lightningAlign = 0.5f;
     private static final Rand rand = new Rand();
-    // private static final Rand rand = new Rand();
-    // private static final Rand rand2 = new Rand();
-    // private static final Vec2 v = new Vec2();
-    // private static final int[] oneArr = { 1 };
+
     public static Effect trailFadeFast = new Effect(600f, e -> {
         if (!(e.data instanceof Trail))
             return;
         Trail trail = e.data();
-        // lifetime is how many frames it takes to fade out the trail
+
         e.lifetime = trail.length * 1.4f;
 
         if (!state.isPaused()) {
@@ -181,48 +178,7 @@ public class JBFx {
                 Drawf.light(e.x, e.y, e.fout() * 80f, JBColor.darkEnrColor, 0.7f);
             }),
 
-            // chainLightningFadeReversed = new Effect(220f, 500f, e -> {
-            // if (!(e.data instanceof Position))
-            // return;
-            // Position p = e.data();
-            // float tx = e.x, ty = e.y, dst = Mathf.dst(p.getX(), p.getY(), tx, ty);
-            // Tmp.v1.set(e.x, e.y).sub(p).nor();
 
-            // e.lifetime = dst * 0.3f;
-            // float normx = Tmp.v1.x, normy = Tmp.v1.y;
-            // float range = e.rotation;
-            // int links = Mathf.ceil(dst / range);
-            // float spacing = dst / links;
-
-            // Lines.stroke(2.5f * Mathf.curve(e.fout(), 0, 0.7f));
-            // color(e.color, Color.white, e.fout() * 0.6f);
-
-            // Lines.beginLine();
-
-            // Fill.circle(p.getX(), p.getY(), Lines.getStroke() / 2);
-            // Lines.linePoint(p);
-
-            // rand.setSeed(e.id);
-
-            // float fin = Mathf.curve(e.fin(), 0, lightningAlign);
-            // int i;
-            // float nx = p.getX(), ny = p.getY();
-            // for (i = 0; i < (int) (links * fin); i++) {
-            // if (i == links - 1) {
-            // nx = tx;
-            // ny = ty;
-            // } else {
-            // float len = (i + 1) * spacing;
-            // Tmp.v1.setToRandomDirection(rand).scl(range / 2f);
-            // nx = p.getX() + normx * len + Tmp.v1.x;
-            // ny = p.getY() + normy * len + Tmp.v1.y;
-            // }
-
-            // linePoint(nx, ny);
-            // }
-
-            // Lines.endLine();
-            // }).followParent(false),
 
             attackWarningRange = new Effect(120f, 2000f, e -> {
                 Draw.color(e.color);
@@ -316,7 +272,6 @@ public class JBFx {
 
             e.scaled(lifetime / 2, t -> {
                 Fill.circle(t.x, t.y, t.fout() * 8f);
-                // if (NHSetting.enableDetails())
                 Angles.randLenVectors(t.id + 1, (int) (range / 13), 2 + range * 0.75f * t.finpow(), (x, y) -> {
                     Fill.circle(t.x + x, t.y + y, t.fout(Interp.pow2Out) * Mathf.clamp(range / 15f, 3f, 14f));
                     Drawf.light(t.x + x, t.y + y, t.fout(Interp.pow2Out) * Mathf.clamp(range / 15f, 3f, 14f), color,
@@ -324,7 +279,6 @@ public class JBFx {
                 });
             });
 
-            // if (!NHSetting.enableDetails()) return;
             Draw.z(Layer.bullet - 0.001f);
             color(Color.gray);
             alpha(0.85f);
@@ -755,50 +709,21 @@ public class JBFx {
         Fill.circle(e.x, e.y, 15f * e.fin(Interp.pow5Out));
     });
 
-    public static final Effect cryoDrillWorkTiny = new Effect(35f, e -> {
-        Color cold = Color.valueOf("6ef0ff");
-
-        // світло
-        Drawf.light(e.x, e.y, e.fout() * 20f, cold, 0.18f);
-
-        // плавність появи та зникання
-        float fade = Mathf.curve(e.fin(), e.fout()); // комбінує fade-in і fade-out
-
-        for (int i = 0; i < 2; i++) {
-            float offsetX = Mathf.sin(e.id + i) * 1.2f;
-            float offsetY = Mathf.cos(e.id + i) * 1.2f;
-
-            float x = e.x + offsetX;
-            float y = e.y + offsetY;
-
-            float radius = 3f;
-
-            // прозорість з плавним появленням і зниканням
-            float alpha = fade * 0.45f;
-
-            Draw.color(cold, Color.white, alpha);
-            Fill.circle(x, y, radius);
-        }
-
-        Draw.reset();
-    });
-
     public static Effect antiMatterCharge = new Effect(90f, e -> {
 
         float fin = e.fin();
         float fout = e.fout();
         float warm = fin * fin;
 
-        // ✅ Плавна поява - від 0 до 1 протягом перших 20% часу
         float fadeIn = Mathf.curve(e.fin(), 0f, 0.2f);
 
         Color c1 = Color.valueOf("9d7aff");
         Color c2 = Color.valueOf("5f9cff");
 
         Draw.color(c1, c2, fin);
-        Draw.alpha(0.6f * fout * fadeIn); // ✅ Додано fadeIn
+        Draw.alpha(0.6f * fout * fadeIn);
 
-        Lines.stroke(1.5f * fout * fadeIn); // ✅ Додано fadeIn
+        Lines.stroke(1.5f * fout * fadeIn);
         for (int i = 0; i < 3; i++) {
             float rot = e.time * (0.6f + i * 0.2f);
             float radius = (6f + i * 4f) * (1f + warm * 1.5f);
@@ -816,11 +741,11 @@ public class JBFx {
                     e.x + Tmp.v1.x,
                     e.y + Tmp.v1.y,
                     angle + 90f,
-                    6f * fout * fadeIn // ✅ Додано fadeIn
+                    6f * fout * fadeIn
             );
         }
 
-        Draw.alpha(0.4f * fout * fadeIn); // ✅ Додано fadeIn
+        Draw.alpha(0.4f * fout * fadeIn);
         for (int i = 0; i < 8; i++) {
             float a = Mathf.randomSeed(e.id + i, 360f);
             float r = Mathf.randomSeed(e.id * 2 + i, 4f, 14f) * warm;
@@ -829,7 +754,7 @@ public class JBFx {
             Fill.circle(
                     e.x + Tmp.v1.x,
                     e.y + Tmp.v1.y,
-                    1.3f * fout * fadeIn // ✅ Додано fadeIn
+                    1.3f * fout * fadeIn
             );
         }
 
@@ -839,18 +764,15 @@ public class JBFx {
     public static Effect adamantiumSynthesizerWork = new Effect(60f, e -> {
         Draw.z(Layer.effect);
 
-        // основний колір адамантію
-        Color c1 = Color.valueOf("#E02D2D"); // світло-синій
+        Color c1 = Color.valueOf("#E02D2D");
         Color c2 = Color.white;
 
         float fin = e.fin();
         float fout = e.fout();
 
-        // м’яке пульсуюче світло
         Draw.color(c1, fout * 0.6f);
         Fill.circle(e.x, e.y, 6f + Mathf.absin(Time.time, 6f, 1.5f));
 
-        // кільця енергії
         Draw.color(c1, c2, fin);
         Lines.stroke(1.4f * fout);
 
@@ -859,7 +781,6 @@ public class JBFx {
             Lines.circle(e.x, e.y, radius);
         }
 
-        // дрібні енергетичні частинки
         Rand rand = Fx.rand;
         rand.setSeed(e.id);
 
