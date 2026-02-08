@@ -777,7 +777,7 @@ public class JBBlocks {
                         Items.surgeAlloy, 1200,
                         Items.phaseFabric, 900));
 
-                size = 9;
+                size = 8;
                 health = 9000;
                 range = 1200f;
                 reload = 240f;
@@ -870,7 +870,7 @@ public class JBBlocks {
                         Items.surgeAlloy, 900,
                         Items.phaseFabric, 700));
 
-                size = 9;
+                size = 8;
                 health = 8200;
                 range = 1000f;
                 reload = 360f;
@@ -954,7 +954,7 @@ public class JBBlocks {
                         Items.surgeAlloy, 1200,
                         Items.phaseFabric, 800));
 
-                size = 9;
+                size = 8;
                 health = 9500;
                 range = 1500f;
                 reload = 420f;
