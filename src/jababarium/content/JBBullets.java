@@ -269,7 +269,7 @@ public class JBBullets {
             }
         };
 
-        apexMicro = new BasicBulletType(7f, 180) {
+        apexMicro = new BasicBulletType(7f, 300) {
             {
                 lifetime = 45f;
                 width = 8f;
@@ -289,7 +289,7 @@ public class JBBullets {
             }
         };
 
-        apexShard = new BasicBulletType(5f, 320) {
+        apexShard = new BasicBulletType(5f, 520) {
             {
                 lifetime = 55f;
                 width = 12f;
@@ -315,7 +315,7 @@ public class JBBullets {
             }
         };
 
-        apexShell = new ArtilleryBulletType(3.6f, 1500f) {
+        apexShell = new ArtilleryBulletType(5.2f, 5000f) {
             {
                 lifetime = 180f;
                 width = 30f;

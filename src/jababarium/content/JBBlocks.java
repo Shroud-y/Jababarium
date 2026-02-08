@@ -15,6 +15,7 @@ import mindustry.type.Item;
 import mindustry.type.LiquidStack;
 import mindustry.world.blocks.power.PowerGenerator;
 import mindustry.world.draw.*;
+import mindustry.ctype.Content;
 import arc.math.Mathf;
 import arc.util.Time;
 import jababarium.util.graphic.DrawFunc;
@@ -57,6 +58,7 @@ import mindustry.world.meta.BuildVisibility;
 
 import javax.swing.plaf.ColorUIResource;
 
+import static arc.graphics.g2d.Lines.curve;
 import static arc.graphics.g2d.Lines.lineAngle;
 import static mindustry.type.ItemStack.with;
 
@@ -537,12 +539,6 @@ public class JBBlocks {
                 shootSound = JBSounds.blastShockwave;
                 chargeSound = JBSounds.blastShockwave;
 
-                shoot = new ShootPattern() {
-                    {
-                        firstShotDelay = 120f;
-                    }
-                };
-
                 smokeEffect = new Effect(50, e -> {
                     Draw.color(heatColor);
                     Draw.color(Color.white);
@@ -570,6 +566,20 @@ public class JBBlocks {
                     Fx.massiveExplosion.at(e.x, e.y, heatColor);
                 });
 
+                smokeEffect = new Effect(50, e -> {
+                    Draw.color(heatColor);
+                    Lines.stroke(e.fout() * 5f);
+                    Lines.circle(e.x, e.y, e.fin() * 300);
+                    Lines.stroke(e.fout() * 3f);
+                    Lines.circle(e.x, e.y, e.fin() * 180);
+                    Lines.stroke(e.fout() * 3.2f);
+                    Angles.randLenVectors(e.id, 30, 18 + 80 * e.fin(), (x, y) -> {
+                        lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), e.fslope() * 14 + 5);
+                    });
+                    Draw.color(Color.white);
+                    Drawf.light(e.x, e.y, e.fout() * 120, heatColor, 0.7f);
+                });
+
                 shootType = new BasicBulletType(3.5f, 600f) {
                     {
                         width = 45f;
@@ -589,14 +599,17 @@ public class JBBlocks {
                         trailWidth = 18f;
                         trailLength = 80;
 
-                        hitEffect = Fx.impactReactorExplosion;
-                        despawnEffect = Fx.impactReactorExplosion;
+                        hitEffect = Fx.coreExplosion;
+                        despawnEffect = Fx.coreExplosion;
                         hitSound = JBSounds.blastShockwave;
 
                         lightningColor = Color.valueOf("bf92f9");
                         lightningDamage = 90f;
                         lightningLength = 25;
                         lightningLengthRand = 15;
+
+                        splashDamage = 5000f;
+                        splashDamageRadius = 150f;
                     }
 
                     @Override
@@ -680,18 +693,6 @@ public class JBBlocks {
                     public boolean shouldConsume() {
                         return isShooting() && !isLocked;
                     }
-
-                    @Override
-                    public void draw() {
-                        super.draw();
-                        if (internalHeat > 0.1f) {
-                            Draw.z(Layer.effect);
-                            Draw.color(Color.orange, Color.red, Mathf.clamp(internalHeat - 0.5f) * 2f);
-                            Draw.alpha(internalHeat * 0.4f);
-                            Fill.rect(x, y, size * 7f, size * 7f);
-                            Draw.reset();
-                        }
-                    }
                 };
             }
         };
@@ -768,100 +769,7 @@ public class JBBlocks {
             }
         };
 
-        solarApex = new PowerTurret("solar-apex") {
-            {
-                requirements(Category.turret, with(
-                        JBItems.singularium, 1200,
-                        JBItems.pulsarite, 1400,
-                        JBItems.sergium, 1600,
-                        Items.surgeAlloy, 1200,
-                        Items.phaseFabric, 900));
-
-                size = 8;
-                health = 9000;
-                range = 1200f;
-                reload = 240f;
-                recoil = 10f;
-                recoilTime = 120f;
-                shake = 8f;
-                rotateSpeed = 0.6f;
-                shootCone = 2f;
-
-                consumePower(120f);
-                consumeLiquid(Liquids.cryofluid, 5f);
-                coolant = new ConsumeLiquid(Liquids.cryofluid, 2.5f);
-                liquidCapacity = 480f;
-                coolantMultiplier = 3.5f;
-
-                heatColor = Color.valueOf("ffd36b");
-                shootSound = JBSounds.largeBeam;
-                loopSound = JBSounds.bioLoop;
-                loopSoundVolume = 2f;
-
-                shoot = new ShootPattern() {
-                    {
-                        firstShotDelay = 90f;
-                    }
-                };
-
-                drawer = new DrawTurret() {
-                    {
-                        parts.add(new RegionPart("-glow") {
-                            {
-                                blending = Blending.additive;
-                                color = heatColor;
-                                progress = PartProgress.warmup;
-                                outline = false;
-                            }
-                        });
-                    }
-                };
-
-                shootEffect = new Effect(70f, e -> {
-                    Draw.color(heatColor, Color.white, e.fin());
-                    Lines.stroke(e.fout() * 7f);
-                    Lines.circle(e.x, e.y, e.fin() * 200f);
-                    Drawf.light(e.x, e.y, e.fin() * 260f, heatColor, 0.9f);
-                });
-
-                ammoUseEffect = new Effect(140f, e -> {
-                    Draw.color(heatColor);
-                    Lines.stroke(Mathf.curve(e.fin(), 0, 1) * 5f);
-                    Lines.circle(e.x, e.y, e.fout() * 180f);
-                    Draw.color(Color.white);
-                    Drawf.light(e.x, e.y, e.fin() * 240f, heatColor, 0.9f);
-                });
-
-                shootType = new ContinuousLaserBulletType(4200f) {
-                    {
-                        length = 1200f;
-                        width = 26f;
-                        lifetime = 60f;
-                        hitSize = 20f;
-                        drawSize = 420f;
-                        knockback = 2.5f;
-                        pierceArmor = true;
-
-                        hitColor = lightColor = lightningColor = heatColor;
-                        colors = new Color[] {
-                                heatColor.cpy().mul(1f, 0.85f, 0.6f, 0.6f),
-                                heatColor.cpy().mul(1f, 0.9f, 0.7f, 0.8f),
-                                Color.white
-                        };
-
-                        hitEffect = Fx.impactReactorExplosion;
-                        shootEffect = Fx.shootBigColor;
-                        smokeEffect = Fx.smokeCloud;
-                        despawnEffect = Fx.none;
-
-                        status = StatusEffects.melting;
-                        statusDuration = 60f * 6f;
-                    }
-                };
-            }
-        };
-
-        chronos = new PowerTurret("chronos") {
+        chronos = new ItemTurret("chronos") {
             {
                 requirements(Category.turret, with(
                         JBItems.chronite, 1200,
@@ -871,9 +779,9 @@ public class JBBlocks {
                         Items.phaseFabric, 700));
 
                 size = 8;
-                health = 8200;
+                health = 800200;
                 range = 1000f;
-                reload = 360f;
+                reload = 500f;
                 recoil = 6f;
                 recoilTime = 90f;
                 shake = 6f;
@@ -882,22 +790,13 @@ public class JBBlocks {
                 inaccuracy = 1.5f;
 
                 consumePower(90f);
-                consumeLiquid(Liquids.cryofluid, 3f);
-                coolant = new ConsumeLiquid(Liquids.cryofluid, 2f);
                 liquidCapacity = 360f;
                 coolantMultiplier = 3f;
 
                 heatColor = Color.valueOf("7fd6ff");
-                shootSound = JBSounds.largeBeam;
-                chargeSound = JBSounds.beam;
+                shootSound = JBSounds.hugeBlast;
                 loopSound = JBSounds.bioLoop;
                 loopSoundVolume = 1.2f;
-
-                shoot = new ShootPattern() {
-                    {
-                        firstShotDelay = 90f;
-                    }
-                };
 
                 drawer = new DrawTurret() {
                     {
@@ -927,7 +826,7 @@ public class JBBlocks {
                     Drawf.light(e.x, e.y, e.fin() * 200f, heatColor, 0.8f);
                 });
 
-                shootType = JBBullets.chronosShell;
+                ammo(JBItems.chronite, JBBullets.chronosShell);
             }
         };
 
@@ -945,7 +844,7 @@ public class JBBlocks {
             }
         };
 
-        apex = new PowerTurret("apex") {
+        apex = new ItemTurret("apex") {
             {
                 requirements(Category.turret, with(
                         JBItems.singularium, 1400,
@@ -955,7 +854,7 @@ public class JBBlocks {
                         Items.phaseFabric, 800));
 
                 size = 8;
-                health = 9500;
+                health = 950000;
                 range = 1500f;
                 reload = 420f;
                 recoil = 14f;
@@ -964,21 +863,13 @@ public class JBBlocks {
                 rotateSpeed = 0.35f;
                 shootCone = 2f;
 
-                consumePower(120f);
-                consumeLiquid(Liquids.cryofluid, 3f);
-                coolant = new ConsumeLiquid(Liquids.cryofluid, 2.5f);
-                liquidCapacity = 420f;
-                coolantMultiplier = 3.2f;
+                itemCapacity = 500;
 
-                heatColor = Color.valueOf("ffb85c");
+                consumePower(120f);
+
+                heatColor = Color.valueOf("#4dff7a");
                 shootSound = JBSounds.blastShockwave;
                 chargeSound = JBSounds.largeBeam;
-
-                shoot = new ShootPattern() {
-                    {
-                        firstShotDelay = 120f;
-                    }
-                };
 
                 drawer = new DrawTurret() {
                     {
@@ -1008,7 +899,7 @@ public class JBBlocks {
                     Drawf.light(e.x, e.y, e.fin() * 240f, heatColor, 0.9f);
                 });
 
-                shootType = JBBullets.apexShell;
+                ammo(JBItems.plastanium, JBBullets.apexShell);
             }
         };
 
@@ -1022,7 +913,7 @@ public class JBBlocks {
                         JBItems.sergium, 500));
 
                 size = 6;
-                health = 2200;
+                health = 940000;
                 range = 2000f;
                 reload = 1000f;
 
@@ -1104,6 +995,98 @@ public class JBBlocks {
                         }
 
                 );
+            }
+        };
+
+        solarApex = new PowerTurret("solar-apex") {
+            {
+                requirements(Category.turret, with(
+                        JBItems.singularium, 1200,
+                        JBItems.pulsarite, 1400,
+                        JBItems.sergium, 1600,
+                        Items.surgeAlloy, 1200,
+                        Items.phaseFabric, 900));
+
+                size = 8;
+                health = 120000;
+                range = 1200f;
+                reload = 10f;
+                recoil = 10f;
+                recoilTime = 120f;
+                shake = 8f;
+                rotateSpeed = 0.6f;
+                shootCone = 2f;
+
+                consumePower(120f);
+                consumeLiquid(Liquids.cryofluid, 5f);
+                liquidCapacity = 480f;
+                coolantMultiplier = 3.5f;
+
+                heatColor = Color.valueOf("ffd36b");
+                shootSound = JBSounds.largeBeam;
+                loopSound = JBSounds.bioLoop;
+                loopSoundVolume = 2f;
+
+                shoot = new ShootPattern() {
+                    {
+                        firstShotDelay = 90f;
+                    }
+                };
+
+                drawer = new DrawTurret() {
+                    {
+                        parts.add(new RegionPart("-glow") {
+                            {
+                                blending = Blending.additive;
+                                color = heatColor;
+                                progress = PartProgress.warmup;
+                                outline = false;
+                            }
+                        });
+                    }
+                };
+
+                shootEffect = new Effect(70f, e -> {
+                    Draw.color(heatColor, Color.white, e.fin());
+                    Lines.stroke(e.fout() * 7f);
+                    Lines.circle(e.x, e.y, e.fin() * 200f);
+                    Drawf.light(e.x, e.y, e.fin() * 260f, heatColor, 0.9f);
+                });
+
+                ammoUseEffect = new Effect(140f, e -> {
+                    Draw.color(heatColor);
+                    Lines.stroke(Mathf.curve(e.fin(), 0, 1) * 5f);
+                    Lines.circle(e.x, e.y, e.fout() * 180f);
+                    Draw.color(Color.white);
+                    Drawf.light(e.x, e.y, e.fin() * 240f, heatColor, 0.9f);
+                });
+
+                shootType = new ContinuousLaserBulletType(4200f) {
+                    {
+                        length = 1200f;
+                        width = 26f;
+                        lifetime = 60f;
+                        hitSize = 20f;
+                        drawSize = 420f;
+                        knockback = 2.5f;
+                        pierceArmor = true;
+
+                        hitColor = lightColor = lightningColor = heatColor;
+                        colors = new Color[] {
+                                heatColor.cpy().mul(1f, 0.85f, 0.6f, 0.6f),
+                                heatColor.cpy().mul(1f, 0.9f, 0.7f, 0.8f),
+                                Color.white
+                        };
+
+                        hitEffect = JBFx.lightningHitLarge;
+                        shootEffect = Fx.shootBigColor;
+                        smokeEffect = Fx.smokeCloud;
+                        despawnEffect = Fx.none;
+
+                        status = StatusEffects.melting;
+                        statusDuration = 60f * 6f;
+                    }
+                };
             }
         };
     }
